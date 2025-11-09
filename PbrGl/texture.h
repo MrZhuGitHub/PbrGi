@@ -10,7 +10,7 @@ namespace PbrGi {
             Texture();
             ~Texture();
             
-            bool getTextureId(int& textureId) const {
+            bool getTextureId(unsigned int& textureId) {
                 textureId = mTextureId;
                 return mTextureIfValid;
             }

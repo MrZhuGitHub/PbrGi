@@ -5,22 +5,26 @@
 
 namespace PbrGi {
 
-    camera::camera(glm::vec3 cameraPos, glm::vec3 cameraFocus, glm::vec3 cameraUp)
-        : cameraPos_(cameraPos)
+    camera::camera(float width, float height, float near, float far, glm::vec3 cameraPos, glm::vec3 cameraFocus, glm::vec3 cameraUp)
+        : width_(width)
+        , height_(height)
+        , near_(near)
+        , far_(far)
+        , cameraPos_(cameraPos)
         , cameraFocus_(cameraFocus)
         , cameraUp_(cameraUp)
-        , cameraDirection_(cameraFocus_ - cameraPos_)
-        , fov_(45.0f)
+        , cameraDirection_(glm::normalize(cameraPos_ - cameraFocus_))
+        , fov_(glm::length(cameraPos - cameraFocus))
         , yaw_(90.0f)
         , pitch_(0.0f) {
 
-        glm::vec3 normal = glm::normalize(cameraPos);
-        yaw_ = atan(normal.z / normal.x) * 180.0f / 3.14159 + 180.0f;
-        pitch_ = atan(normal.y / sqrt(normal.z * normal.z + normal.x * normal.x)) * 180.0f / 3.14159;
+        yaw_ = atan(cameraDirection_.z / cameraDirection_.x) * 180.0f / 3.14159 + 180.0f;
+        pitch_ = atan(cameraDirection_.y / sqrt(cameraDirection_.z * cameraDirection_.z + cameraDirection_.x * cameraDirection_.x)) * 180.0f / 3.14159;
     }
 
     void camera::move(MoveDirection direction, float distance) {
-        glm::vec3 x(cameraPos_.x, 0, cameraPos_.z);
+
+        glm::vec3 x(cameraDirection_.x, 0, cameraDirection_.z);
         x = glm::normalize(x);
         glm::vec3 y = glm::cross(x, glm::vec3(0, 1, 0));
         y = glm::normalize(y);
@@ -39,6 +43,8 @@ namespace PbrGi {
         else {
             std::cout << "input invalid camera moving direction" << std::endl;
         }
+
+        cameraPos_ = fov_ * cameraDirection_ + cameraFocus_;
     }
 
     void camera::viewAngle(float yawOffset, float pitchOffset) {
@@ -50,33 +56,33 @@ namespace PbrGi {
         if (pitch_ < -89.0f)
             pitch_ = -89.0f;
 
-        glm::vec3 front;
-        front.x = cos(glm::radians(pitch_)) * cos(glm::radians(yaw_));
-        front.y = sin(glm::radians(pitch_));
-        front.z = cos(glm::radians(pitch_)) * sin(glm::radians(yaw_));
-        cameraPos_ = glm::length(cameraPos_) * glm::normalize(front);
+        cameraDirection_.x = cos(glm::radians(pitch_)) * cos(glm::radians(yaw_));
+        cameraDirection_.y = sin(glm::radians(pitch_));
+        cameraDirection_.z = cos(glm::radians(pitch_)) * sin(glm::radians(yaw_));
+        cameraPos_ = fov_ * cameraDirection_ + cameraFocus_;
     }
 
     void camera::zoom(float fovOffset) {
-        fov_ = fov_ + fovOffset;
+        fov_ = fov_ + fovOffset * 10;
         if (fov_ < 1) {
             fov_ = 1;
         }
+        cameraPos_ = fov_ * cameraDirection_ + cameraFocus_;
     }
 
     glm::mat4 camera::getViewMatrix() {
         glm::mat4 view;
-        view = glm::lookAt(fov_ * cameraPos_ + cameraFocus_, cameraFocus_, cameraUp_);
+        view = glm::lookAt(cameraPos_, cameraFocus_, cameraUp_);
         return view;
     }
 
     glm::mat4 camera::getProjectMatrix() {
-        glm::mat4 proj = glm::perspective(glm::radians(45.0f), 2000.0f / 1200.0f, 0.1f, 10000.0f);
+        glm::mat4 proj = glm::perspective(glm::radians(45.0f), width_ / height_, near_, far_);
         return proj;
     }
 
     glm::vec3 camera::getCameraPosition() {
-        return (fov_ * cameraPos_ + cameraFocus_);
+        return cameraPos_;
     }
 
 }

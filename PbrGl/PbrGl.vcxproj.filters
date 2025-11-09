@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="源文件\shader">
+      <UniqueIdentifier>{21f2cf2f-51e4-4b54-9afd-24771e3f79ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\asset">
+      <UniqueIdentifier>{6188525a-f0cb-4958-a6f3-219d28840089}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PbrGl.cpp">
@@ -21,5 +27,51 @@
     <ClCompile Include="third-party\glad\src\glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="framebuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="program.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="texture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="camera.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="common.hpp">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="framebuffer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="program.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="asset\su7.glb">
+      <Filter>源文件\asset</Filter>
+    </None>
+    <None Include="shader\SimpleFragment.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\SimpleVertex.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -5,6 +5,10 @@
 namespace PbrGi {
 
     Program::Program(const char* vertexPath, const char* fragmentPath, const char* geometryPath) {
+
+        std::cout << vertexPath << std::endl;
+        std::cout << fragmentPath << std::endl;
+
         std::string vertexCode;
         std::string fragmentCode;
         std::string geometryCode;
@@ -98,7 +102,11 @@ namespace PbrGi {
 
         glDeleteShader(vertex);
         glDeleteShader(fragment);
-        glDeleteShader(geometry);
+        if (nullptr != geometryPath) {
+            glDeleteShader(geometry);
+        }
+
+        mTextureCount = 0;
     }
 
     void Program::use() {
@@ -157,6 +165,22 @@ namespace PbrGi {
         //std::cout << "1:" << glGetError() << std::endl;
         glUniform2i(glGetUniformLocation(ID, name.c_str()), property[0], property[1]);
         //std::cout << "2:" << glGetError() << std::endl;
+    }
+
+    void Program::setTexture2D(std::string name, unsigned int textureId) {
+        glActiveTexture(GL_TEXTURE0 + mTextureCount);
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        GLint location = glGetUniformLocation(ID, name.c_str());
+        glUniform1i(location, mTextureCount);
+        mTextureCount++;
+    }
+
+    void Program::setTexture3D(std::string name, unsigned int textureId) {
+        glActiveTexture(GL_TEXTURE0 + mTextureCount);
+        glBindTexture(GL_TEXTURE_3D, textureId);
+        GLint location = glGetUniformLocation(ID, name.c_str());
+        glUniform1i(location, mTextureCount);
+        mTextureCount++;
     }
 
     Program::~Program() {

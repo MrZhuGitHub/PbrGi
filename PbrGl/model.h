@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <optional>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -18,21 +19,24 @@
 
 namespace PbrGi {
 
+    class Texture;
+
     struct vertex {
         glm::vec3 position;
         glm::vec3 normal;
         glm::vec2 texCoords;
     };
 
-    struct texture {
-        unsigned int id;
-        std::string type;
-        std::string path;
+    struct material {
+        std::optional<glm::vec3> baseColor;
+        std::optional<float> metallic;
+        std::optional<float> roughness;
+        std::optional < std::shared_ptr<PbrGi::Texture>> baseColorTexture;
     };
 
     class mesh {
     public:
-        mesh(std::vector<vertex> vertices, std::vector<unsigned int> indices, std::vector<texture> textures);
+        mesh(std::vector<vertex> vertices, std::vector<unsigned int> indices, material ma);
         void drawMesh(std::shared_ptr<Program> program, int size);
         std::shared_ptr<mesh> processMesh(aiMesh* mesh, const aiScene* scene);
 
@@ -44,7 +48,7 @@ namespace PbrGi {
     private:
         std::vector<vertex> vertices_;
         std::vector<unsigned int> indices_;
-        std::vector<texture> textures_;
+        material material_;
         unsigned int VAO_;
         unsigned int VBO_;
         unsigned int EBO_;
@@ -66,8 +70,6 @@ namespace PbrGi {
         void processNode(aiNode* node, const aiScene* scene);
 
         std::shared_ptr<mesh> processMesh(aiMesh* mesh, const aiScene* scene);
-        std::vector<texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
-        unsigned int textureFromFile(const char* path, const std::string& directory);
 
     private:
         std::vector<std::shared_ptr<mesh>> meshes_;

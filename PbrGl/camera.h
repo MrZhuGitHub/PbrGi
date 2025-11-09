@@ -16,7 +16,7 @@ namespace PbrGi {
 
     class camera {
     public:
-        camera(glm::vec3 cameraPos = glm::vec3(-2, 2, -2), glm::vec3 cameraFocus = glm::vec3(0, 0, 0), glm::vec3 cameraUp = glm::vec3(0, 1, 0));
+        camera(float width, float height, float near, float far, glm::vec3 cameraPos = glm::vec3(-20.0, 20.0, -20.0), glm::vec3 cameraFocus = glm::vec3(0, 0, 0), glm::vec3 cameraUp = glm::vec3(0, 1, 0));
 
         void move(MoveDirection direction, float distance);
 
@@ -38,6 +38,11 @@ namespace PbrGi {
         float fov_;
         float yaw_;
         float pitch_;
+
+        float width_;
+        float height_;
+        float near_;
+        float far_;
     };
 
 }

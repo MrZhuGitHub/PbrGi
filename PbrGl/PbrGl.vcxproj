@@ -88,13 +88,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glad\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\assimp\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glm\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\lib-vc2019;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -105,15 +106,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glad\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\assimp\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glm\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\lib-vc2019;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -122,13 +124,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glad\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\assimp\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glm\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\lib-vc2019;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,20 +142,39 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glad\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\assimp\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glm\include;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\lib-vc2019;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\glfw\lib-vc2019;C:\Users\zhuhui\source\repos\PbrGl\PbrGl\third-party\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
+    <ClCompile Include="framebuffer.cpp" />
+    <ClCompile Include="model.cpp" />
     <ClCompile Include="PbrGl.cpp" />
+    <ClCompile Include="program.cpp" />
+    <ClCompile Include="texture.cpp" />
     <ClCompile Include="third-party\glad\src\glad.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="common.hpp" />
+    <ClInclude Include="framebuffer.h" />
+    <ClInclude Include="model.h" />
+    <ClInclude Include="program.h" />
+    <ClInclude Include="texture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="asset\su7.glb" />
+    <None Include="shader\SimpleFragment.glsl" />
+    <None Include="shader\SimpleVertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

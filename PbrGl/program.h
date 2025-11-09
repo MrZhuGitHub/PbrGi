@@ -39,8 +39,14 @@ namespace PbrGi {
 
         void setProperty(glm::ivec2 property, std::string name);
 
+        void setTexture2D(std::string name, unsigned int textureId);
+
+        void setTexture3D(std::string name, unsigned int textureId);
+
     private:
         unsigned int ID;
+        unsigned int mTextureCount;
+
     };
 
 }

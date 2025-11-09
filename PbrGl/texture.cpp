@@ -67,7 +67,7 @@ bool Texture::init2DTexture(std::string path, bool mipmap) {
 }
 
 bool Texture::init2DTexture(std::vector<std::string> paths, unsigned int mipmapLevel) {
-    
+    return false;
 }
 
 bool Texture::init3DTexture(std::vector<std::string> faces, bool mimmap) {
