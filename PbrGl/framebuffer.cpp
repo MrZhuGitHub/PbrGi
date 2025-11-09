@@ -50,7 +50,6 @@ namespace PbrGi {
         else {
             glGenFramebuffers(1, &frameBufferId_);
 
-
             if (depthBuffer_) {
                 glGenTextures(1, &textureId_);
                 glBindTexture(GL_TEXTURE_2D, textureId_);

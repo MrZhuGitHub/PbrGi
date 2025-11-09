@@ -56,6 +56,10 @@ namespace PbrGi {
         ~model();
         void drawModel(std::shared_ptr<Program> program);
         void addInstance(glm::mat4 posAndSizeMat4);
+        std::vector<float> get3DBox() {
+            std::vector<float> box = { mXmin , mXmax ,mYmin ,mYmax ,mZmin ,mZmax };
+            return box;
+        }
 
     private:
         void loadModel(std::string path);
@@ -69,6 +73,12 @@ namespace PbrGi {
         std::vector<std::shared_ptr<mesh>> meshes_;
         std::string directory_;
         std::vector<glm::mat4> transforms_;
+        float mXmax;
+        float mYmax;
+        float mZmax;
+        float mXmin;
+        float mYmin;
+        float mZmin;
     };
 
 }

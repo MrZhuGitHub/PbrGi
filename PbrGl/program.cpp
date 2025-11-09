@@ -159,36 +159,6 @@ namespace PbrGi {
         //std::cout << "2:" << glGetError() << std::endl;
     }
 
-    void Program::setLight() {
-        float lightPosition[3] = { -90, 90, -90 };
-        auto lightPositionLocation = glGetUniformLocation(ID, "lightPosition");
-        glUniform3fv(lightPositionLocation, 1, lightPosition);
-
-        float intensity[3] = { 1.0, 1.0, 1.0 };
-        auto intensityLocation = glGetUniformLocation(ID, "intensity");
-        glUniform3fv(intensityLocation, 1, intensity);
-
-        float Ia[3] = { 0.215, 0.27, 0.385 };
-        auto IaLocation = glGetUniformLocation(ID, "Ia");
-        glUniform3fv(IaLocation, 1, Ia);
-
-        float ka[3] = { 1, 1, 1 };
-        auto kaLocation = glGetUniformLocation(ID, "ka");
-        glUniform3fv(kaLocation, 1, ka);
-
-        float kd[3] = { 0.3, 0.3, 0.3 };
-        auto kdLocation = glGetUniformLocation(ID, "kd");
-        glUniform3fv(kdLocation, 1, kd);
-
-        float ks[3] = { 0.3, 0.3, 0.3 };
-        auto ksLocation = glGetUniformLocation(ID, "ks");
-        glUniform3fv(ksLocation, 1, ks);
-
-        float phongExp = 16;
-        auto phongExpLocation = glGetUniformLocation(ID, "phongExp");
-        glUniform1f(phongExpLocation, phongExp);
-    }
-
     Program::~Program() {
         glDeleteProgram(ID);
     }

@@ -52,29 +52,6 @@ namespace PbrGi {
     void mesh::drawMesh(std::shared_ptr<Program> program, int size) {
         program->use();
 
-        unsigned int diffuseNr = 1;
-        unsigned int specularNr = 1;
-        for (unsigned int i = 0; i < textures_.size(); i++)
-        {
-            glActiveTexture(GL_TEXTURE0 + i);
-            std::string number;
-            std::string name = textures_[i].type;
-            if (name == "texture_diffuse")
-                number = std::to_string(diffuseNr++);
-            else if (name == "texture_specular")
-                number = std::to_string(specularNr++);
-
-            program->setInt((name + number).c_str(), i);
-            glBindTexture(GL_TEXTURE_2D, textures_[i].id);
-        }
-
-        if (textures_.size() > 0) {
-            program->setInt("texture_enable", 1);
-        }
-        else {
-            program->setInt("texture_enable", 0);
-        }
-
         glBindVertexArray(VAO_);
 
         glDrawElementsInstanced(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0, size);
@@ -149,6 +126,13 @@ namespace PbrGi {
             v.position.y = mesh->mVertices[i].y;
             v.position.z = mesh->mVertices[i].z;
 
+            mXmax = v.position.x > mXmax ? v.position.x : mXmax;
+            mYmax = v.position.y > mYmax ? v.position.y : mYmax;
+            mZmax = v.position.z > mZmax ? v.position.z : mZmax;
+            mXmin = v.position.x < mXmin ? v.position.x : mXmin;
+            mYmin = v.position.y < mYmin ? v.position.y : mYmin;
+            mZmin = v.position.z < mZmin ? v.position.z : mZmin;
+
             v.normal.x = mesh->mNormals[i].x;
             v.normal.y = mesh->mNormals[i].y;
             v.normal.z = mesh->mNormals[i].z;
@@ -175,12 +159,21 @@ namespace PbrGi {
         if (mesh->mMaterialIndex >= 0)
         {
             aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-            std::vector<texture> diffuseMaps = loadMaterialTextures(material,
-                aiTextureType_DIFFUSE, "texture_diffuse");
-            textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-            std::vector<texture> specularMaps = loadMaterialTextures(material,
-                aiTextureType_SPECULAR, "texture_specular");
-            textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
+            aiColor3D baseColor;
+            if (material->Get(AI_MATKEY_BASE_COLOR, baseColor) == AI_SUCCESS) {
+                std::cout << "baseColor:" << baseColor.r << "," << baseColor.g << "," << baseColor.b << std::endl;
+            }
+
+            float metallic = 0.0f;
+            if (material->Get(AI_MATKEY_METALLIC_FACTOR, metallic) == AI_SUCCESS) {
+                std::cout << "metallic:" << metallic << std::endl;
+            }
+
+            float roughness = 0.0f;
+            if (material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness) == AI_SUCCESS) {
+                std::cout << "roughness:" << roughness << std::endl;
+            }
         }
 
         return std::make_shared<PbrGi::mesh>(vertices, indices, textures);

@@ -39,8 +39,6 @@ namespace PbrGi {
 
         void setProperty(glm::ivec2 property, std::string name);
 
-        void setLight();
-
     private:
         unsigned int ID;
     };

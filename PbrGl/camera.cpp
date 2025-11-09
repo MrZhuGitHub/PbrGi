@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cmath>
 
-namespace CG {
+namespace PbrGi {
 
     camera::camera(glm::vec3 cameraPos, glm::vec3 cameraFocus, glm::vec3 cameraUp)
         : cameraPos_(cameraPos)
