@@ -15,6 +15,7 @@ namespace PbrGi {
                 return mTextureIfValid;
             }
 
+            bool init2DTexture(const unsigned char* imageData, unsigned int size, bool mipmap);
             bool init2DTexture(std::string path, bool mimmap);
             bool init2DTexture(std::vector<std::string> paths, unsigned int mipmapLevel);
             bool init3DTexture(std::vector<std::string> paths, bool mimmap);

@@ -3,6 +3,8 @@
 
 #include "stb_image.h"
 
+#include <algorithm>
+
 namespace PbrGi {
 
     mesh::mesh(std::vector<vertex> vertices, std::vector<unsigned int> indices, material ma)
@@ -51,8 +53,23 @@ namespace PbrGi {
     void mesh::drawMesh(std::shared_ptr<Program> program, int size) {
         program->use();
 
+        if (material_.opacityFactor.value() == 1.0) {
+            glEnable(GL_DEPTH_TEST);
+            glDepthMask(GL_TRUE);
+            glDisable(GL_BLEND);
+        }
+        else {
+            glDepthMask(GL_FALSE);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
+
         if (material_.baseColor.has_value()) {
             program->setProperty(material_.baseColor.value(), "baseColor");
+        }
+
+        if (material_.opacityFactor.has_value()) {
+            program->setProperty(material_.opacityFactor.value(), "opacityFactor");
         }
 
         if (material_.baseColorTexture.has_value()) {
@@ -72,6 +89,11 @@ namespace PbrGi {
         glDrawElementsInstanced(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0, size);
 
         glBindVertexArray(0);
+
+        if (material_.opacityFactor.value() != 1.0) {
+            glDepthMask(GL_TRUE);
+            glDisable(GL_BLEND);
+        }
     }
 
     model::model(std::string path)
@@ -118,6 +140,8 @@ namespace PbrGi {
         directory_ = path.substr(0, path.find_last_of('/'));
 
         processNode(scene->mRootNode, scene);
+
+        std::sort(meshes_.begin(), meshes_.end(), [](const std::shared_ptr<mesh>& a, const std::shared_ptr<mesh>& b) { return a->material_.opacityFactor.value() > b->material_.opacityFactor.value(); });
     }
 
 
@@ -199,8 +223,46 @@ namespace PbrGi {
                 //std::cout << "roughness:" << roughness << std::endl;
                 ma.roughness = roughness;
             }
+
+            float opacityFactor = 1.0f;
+            if (material->Get(AI_MATKEY_OPACITY, opacityFactor) == AI_SUCCESS) {
+                //std::cout << "opacityFactor: " << opacityFactor << std::endl;
+                ma.opacityFactor = opacityFactor;
+            }
+            else {
+                ma.opacityFactor = 1.0;
+            }
+
+            unsigned int count = material->GetTextureCount(aiTextureType_BASE_COLOR);
+            if (count > 0) {
+                aiString aiPath; // 存储纹理路径或嵌入式纹理标识
+                if (material->GetTexture(aiTextureType_BASE_COLOR, 0, &aiPath) == AI_SUCCESS) {
+                    if (aiPath.data[0] == '*') {
+                        int textureIndex = std::stoi(aiPath.C_Str() + 1);
+                        if (textureIndex >= 0 && textureIndex < (int)scene->mNumTextures) {
+                            aiTexture* embeddedTex = scene->mTextures[textureIndex];
+                            if (embeddedTex->mHeight == 0) {
+                                int width, height, nrComponents;
+                                auto baseColorTexture = std::make_shared<Texture>();
+                                
+                                if (baseColorTexture->init2DTexture(reinterpret_cast<const unsigned char*>(embeddedTex->pcData), embeddedTex->mWidth, true)) {
+                                    unsigned int textureId;
+                                    baseColorTexture->getTextureId(textureId);
+                                    ma.baseColorTexture = baseColorTexture;
+                                }                              
+                            } else {
+                                std::cout << "no yasuo" << std::endl;
+                            }
+                        }
+                    } else {
+                        std::cout << "no qian ru shi" << std::endl;
+                    }
+                }
+            }
         }
 
         return std::make_shared<PbrGi::mesh>(vertices, indices, ma);
     }
 }
+
+

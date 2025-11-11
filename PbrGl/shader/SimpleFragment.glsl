@@ -5,6 +5,7 @@ in vec2 TexCoord;
 uniform bool baseColorTextureExist;
 uniform sampler2D baseColorTexture;
 uniform vec3 baseColor;
+uniform float opacityFactor;
 void main()
 {
 	vec3 n = normalize(normal.xyz);
@@ -19,5 +20,5 @@ void main()
 		color = baseColor;
 	}
 	float gamma = 2.2;
-	Out0_color = vec4(pow(index * color, vec3(1.0 / gamma)), 1.0);
+	Out0_color = vec4(pow(index * color, vec3(1.0 / gamma)), opacityFactor);
 }

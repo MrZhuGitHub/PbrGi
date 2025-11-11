@@ -31,6 +31,7 @@ namespace PbrGi {
         std::optional<glm::vec3> baseColor;
         std::optional<float> metallic;
         std::optional<float> roughness;
+        std::optional<float> opacityFactor;
         std::optional < std::shared_ptr<PbrGi::Texture>> baseColorTexture;
     };
 
@@ -48,10 +49,12 @@ namespace PbrGi {
     private:
         std::vector<vertex> vertices_;
         std::vector<unsigned int> indices_;
-        material material_;
         unsigned int VAO_;
         unsigned int VBO_;
         unsigned int EBO_;
+
+    public:
+        material material_;
     };
 
     class model {
