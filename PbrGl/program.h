@@ -43,6 +43,8 @@ namespace PbrGi {
 
         void setTexture3D(std::string name, unsigned int textureId);
 
+        void setTextureCube(std::string name, unsigned int textureId);
+
     private:
         unsigned int ID;
         unsigned int mTextureCount;

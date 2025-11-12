@@ -30,6 +30,10 @@ namespace PbrGi {
 
         glm::vec3 getCameraPosition();
 
+        glm::vec3 getCameraDirection() {
+            return glm::normalize(cameraDirection_);
+        }
+
     private:
         glm::vec3 cameraPos_;
         glm::vec3 cameraFocus_;

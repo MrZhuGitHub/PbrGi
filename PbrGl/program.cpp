@@ -183,6 +183,15 @@ namespace PbrGi {
         mTextureCount++;
     }
 
+    void Program::setTextureCube(std::string name, unsigned int textureId) {
+        glActiveTexture(GL_TEXTURE0 + mTextureCount);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+        GLint location = glGetUniformLocation(ID, name.c_str());
+        glUniform1i(location, mTextureCount);
+        mTextureCount++;
+    }
+
+
     Program::~Program() {
         glDeleteProgram(ID);
     }

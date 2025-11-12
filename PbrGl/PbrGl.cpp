@@ -6,6 +6,7 @@
 #include "framebuffer.h"
 #include "texture.h"
 #include "camera.h"
+#include "skybox.h"
 
 #include <iostream>
 
@@ -113,14 +114,56 @@ int main() {
     trans1 = glm::translate(glm::inverse(trans1), glm::vec3(-0.5 * (box[0] + box[1]), -0.5 * (box[2] + box[3]), -0.5 * (box[4] + box[5])));
     su7->addInstance(trans1);
 
-    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.1f, 1000.0f);
+    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f);
 
     std::shared_ptr<PbrGi::frameBuffer> indirectLightFramebuffer = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, false, true, 8);
     indirectLightFramebuffer->init();
 
-    glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(1, 1);
-    glEnable(GL_DEPTH_TEST);
+    std::shared_ptr<PbrGi::Texture> ibl = std::make_shared<PbrGi::Texture>();
+    std::vector<std::string> prefilterIbl = {
+            "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m0_px.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m0_nx.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m0_py.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m0_ny.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m0_pz.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m0_nz.png",
+                "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m1_px.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m1_nx.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m1_py.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m1_ny.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m1_pz.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m1_nz.png",
+                "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m2_px.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m2_nx.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m2_py.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m2_ny.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m2_pz.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m2_nz.png",
+                "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m3_px.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m3_nx.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m3_py.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m3_ny.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m3_pz.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m3_nz.png",
+                "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m4_px.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m4_nx.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m4_py.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m4_ny.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m4_pz.png",
+        "C:\\Users\\zhuhui\\Desktop\\pbr\\test\\qwantani_noon_puresky_4k\\m4_nz.png",
+    };
+    unsigned int prefilterIblMimmap = 5;
+    if (ibl->initCubeTexture(prefilterIbl, prefilterIblMimmap)) {
+        std::cout << "init ibl success" << std::endl;
+    } else {
+        std::cout << "init ibl failed" << std::endl;
+    }
+
+    std::shared_ptr<PbrGi::SkyBox> iblSkyBox = std::make_shared<PbrGi::SkyBox>(SCR_WIDTH, SCR_HEIGHT, kCamera, ibl);
+
+    //glEnable(GL_POLYGON_OFFSET_FILL);
+    //glPolygonOffset(1, 1);
+    //glEnable(GL_DEPTH_TEST);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -131,11 +174,17 @@ int main() {
 
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+        
+        iblSkyBox->render();
 
         simpleShader->use();
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
         simpleShader->setViewMatrix(kCamera->getViewMatrix());
         simpleShader->setProjectionMatrix(kCamera->getProjectMatrix());
+
+        unsigned int id;
+        ibl->getTextureId(id);
+        simpleShader->setTextureCube("ibl", id);
 
         su7->drawModel(simpleShader);
 

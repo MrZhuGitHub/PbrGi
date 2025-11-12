@@ -160,6 +160,7 @@
     <ClCompile Include="model.cpp" />
     <ClCompile Include="PbrGl.cpp" />
     <ClCompile Include="program.cpp" />
+    <ClCompile Include="skybox.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="third-party\glad\src\glad.c" />
   </ItemGroup>
@@ -169,12 +170,17 @@
     <ClInclude Include="framebuffer.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="program.h" />
+    <ClInclude Include="skybox.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="asset\su7.glb" />
+    <None Include="shader\pbrFragment.glsl" />
+    <None Include="shader\pbrVertex.glsl" />
     <None Include="shader\SimpleFragment.glsl" />
     <None Include="shader\SimpleVertex.glsl" />
+    <None Include="shader\skyboxFragment.glsl" />
+    <None Include="shader\skyboxVertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

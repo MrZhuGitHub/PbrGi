@@ -42,6 +42,9 @@
     <ClCompile Include="texture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="skybox.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -62,6 +65,9 @@
     <ClInclude Include="texture.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="skybox.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="asset\su7.glb">
@@ -71,6 +77,18 @@
       <Filter>源文件\shader</Filter>
     </None>
     <None Include="shader\SimpleVertex.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\pbrFragment.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\pbrVertex.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\skyboxFragment.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\skyboxVertex.glsl">
       <Filter>源文件\shader</Filter>
     </None>
   </ItemGroup>
