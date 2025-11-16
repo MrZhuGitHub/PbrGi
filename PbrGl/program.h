@@ -27,7 +27,7 @@ namespace PbrGi {
         void setModelMatrix(glm::mat4 modelMatrix);
         void setObjPosMatrix(glm::mat4 objMatrix);
 
-        void setProperty(float* property, std::string name);
+        //void setProperty(float* property, std::string name);
 
         void setProperty(glm::mat4 property, std::string name);
 
@@ -44,6 +44,10 @@ namespace PbrGi {
         void setTexture3D(std::string name, unsigned int textureId);
 
         void setTextureCube(std::string name, unsigned int textureId);
+
+        void setVecFloat(std::string name, float* data, unsigned int count);
+
+         void setVec3Float(std::string name, float* data, unsigned int count);
 
     private:
         unsigned int ID;

@@ -69,7 +69,7 @@ namespace PbrGi {
         }
 
         if (material_.opacityFactor.has_value()) {
-            program->setProperty(material_.opacityFactor.value(), "opacityFactor");
+            program->setFloat("opacityFactor", material_.opacityFactor.value());
         }
 
         if (material_.baseColorTexture.has_value()) {
@@ -83,6 +83,23 @@ namespace PbrGi {
         else {
             program->setBool("baseColorTextureExist", false);
         }
+
+
+        if (material_.metallic.has_value()) {
+            program->setFloat("metallic", material_.metallic.value());
+        }
+        else {
+            program->setFloat("metallic", 0.0);
+        }
+
+        
+        if (material_.roughness.has_value()) {
+            program->setFloat("roughness", material_.roughness.value());
+        }
+        else {
+            program->setFloat("roughness", 1.0);
+        }
+
 
         glBindVertexArray(VAO_);
 

@@ -4,11 +4,6 @@
 #define STBI_FAILURE_USERMSG
 #include "stb_image.h"
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include <iostream>
-
 namespace PbrGi {
 
 Texture::Texture() {
@@ -162,7 +157,7 @@ bool Texture::initCubeTexture(std::vector<std::string> faces, bool mimmap) {
     }
 }
 
-bool Texture::initCubeTexture(std::vector<std::string> faces, unsigned int mipmapLevel) {
+bool Texture::initCubeTextureHDR(std::vector<std::string> faces, unsigned int mipmapLevel) {
     glGetError();
 
     glGenTextures(1, &mTextureId);
@@ -171,11 +166,11 @@ bool Texture::initCubeTexture(std::vector<std::string> faces, unsigned int mipma
     int baseWidth, baseHeight, nrChannels;
     for (unsigned int i = 0; i < 6; i++)
     {
-        unsigned char* data = stbi_load(faces[i].c_str(), &baseWidth, &baseHeight, &nrChannels, 0);
+        float* data = stbi_loadf(faces[i].c_str(), &baseWidth, &baseHeight, &nrChannels, 0);
         if (data)
         {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                0, GL_RGB, baseWidth, baseWidth, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+                0, GL_RGB16F, baseWidth, baseWidth, 0, GL_RGB, GL_FLOAT, data
             );
             stbi_image_free(data);
         }
@@ -200,14 +195,14 @@ bool Texture::initCubeTexture(std::vector<std::string> faces, unsigned int mipma
         for (unsigned int i = 0; i < 6; i++)
         {
             int width, height, channels;
-            unsigned char* data = stbi_load(faces[level * 6 + i].c_str(), &width, &height, &channels, 0);
+            float* data = stbi_loadf(faces[level * 6 + i].c_str(), &width, &height, &channels, 0);
             if (((baseWidth >> level) != width) || ((baseHeight >> level) != height)) {
                 std::cout << "baseWidth or baseHeight is not match mipmap level" << std::endl;
             }
             if (data)
             {
                 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                    level, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+                    level, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data
                 );
                 stbi_image_free(data);
             }
@@ -231,4 +226,50 @@ bool Texture::initCubeTexture(std::vector<std::string> faces, unsigned int mipma
     }
 }
 
+bool Texture::init2DTextureHDR(std::string path, bool mipmap) {
+    glGetError();
+
+    glGenTextures(1, &mTextureId);
+    glBindTexture(GL_TEXTURE_2D, mTextureId);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    if (mipmap) {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+    else {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+
+    int width, height, nrChannels;
+    float* data = stbi_loadf(path.c_str(), &width, &height, &nrChannels, 0);
+
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data);
+        if (mipmap) {
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
+    }
+    else {
+        stbi_image_free(data);
+        mTextureIfValid = false;
+        glBindTexture(GL_TEXTURE_2D, 0);
+        return false;
+    }
+
+    if (0 == glGetError()) {
+        stbi_image_free(data);
+        mTextureIfValid = true;
+        glBindTexture(GL_TEXTURE_2D, 0);
+        return true;
+    }
+    else {
+        stbi_image_free(data);
+        mTextureIfValid = false;
+        glBindTexture(GL_TEXTURE_2D, 0);
+        return false;
+    }
+}
 }

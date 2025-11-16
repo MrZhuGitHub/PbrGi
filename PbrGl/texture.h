@@ -4,6 +4,12 @@
 #include <string>
 #include <vector>
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <fstream>
+#include <iostream>
+#include <cstdint>
+
 namespace PbrGi {
     class Texture {
         public:
@@ -16,10 +22,11 @@ namespace PbrGi {
             }
 
             bool init2DTexture(const unsigned char* imageData, unsigned int size, bool mipmap);
-            bool init2DTexture(std::string path, bool mimmap);
+            bool init2DTexture(std::string path, bool mipmap);
             bool init2DTexture(std::vector<std::string> paths, unsigned int mipmapLevel);
             bool initCubeTexture(std::vector<std::string> paths, bool mimmap);
-            bool initCubeTexture(std::vector<std::string> paths, unsigned int mipmapLevel);
+            bool initCubeTextureHDR(std::vector<std::string> paths, unsigned int mipmapLevel);
+            bool init2DTextureHDR(std::string path, bool mipmap);
 
         private:
             unsigned int mTextureId;

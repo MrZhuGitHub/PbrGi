@@ -125,6 +125,14 @@ namespace PbrGi {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
 
+    void Program::setVecFloat(std::string name, float* data, unsigned int count) {
+        glUniform1fv(glGetUniformLocation(ID, name.c_str()), count, data);
+    }
+
+    void Program::setVec3Float(std::string name, float* data, unsigned int count) {
+        glUniform3fv(glGetUniformLocation(ID, name.c_str()), count, data);
+    }
+
     void Program::setViewMatrix(glm::mat4 viewMatrix) {
         glUniformMatrix4fv(glGetUniformLocation(ID, "viewMatrix"), 1, GL_FALSE, glm::value_ptr(viewMatrix));
     }
@@ -137,9 +145,11 @@ namespace PbrGi {
         glUniformMatrix4fv(glGetUniformLocation(ID, "modelMatrix"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
     }
 
+    /*
     void Program::setProperty(float* property, std::string name) {
         glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, property);
     }
+    */
 
     void Program::setFloat(float property, std::string name) {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), property);
