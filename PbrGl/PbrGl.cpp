@@ -101,12 +101,16 @@ int main() {
         return -1;
     }
 
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
     //std::shared_ptr<PbrGi::Program> simpleShader = std::make_shared<PbrGi::Program>("C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\shader\\SimpleVertex.glsl", "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\shader\\SimpleFragment.glsl");
 
-    std::shared_ptr<PbrGi::Program> simpleShader = std::make_shared<PbrGi::Program>("C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\shader\\pbrVertex.glsl", "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\shader\\pbrFragment.glsl");
+    std::vector<std::string> textureNames = {"baseColorTexture", "sampler0_iblDFG", "sampler0_iblSpecular", "roughnessTexture", "normalTexture"};
+    std::shared_ptr<PbrGi::Program> simpleShader = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\pbrVertex.glsl", ".\\shader\\pbrFragment.glsl");
 
-    auto su7 = std::make_shared<PbrGi::model>("C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\model\\su7.glb");
-
+    //auto su7 = std::make_shared<PbrGi::model>("C:\\Users\\zhuhui\\Desktop\\pile.glb");
+    //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\sphere.glb");
+    auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\su7.glb");
     std::vector<float> box = su7->get3DBox();
     glm::mat4 trans1(1.0f);
     trans1 = glm::rotate(trans1, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -114,43 +118,45 @@ int main() {
     trans1 = glm::translate(glm::inverse(trans1), glm::vec3(-0.5 * (box[0] + box[1]), -0.5 * (box[2] + box[3]), -0.5 * (box[4] + box[5])));
     su7->addInstance(trans1);
 
-    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f);
+    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(-400.0, 100.0, -400.0));
+    //kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f);
+
 
     std::shared_ptr<PbrGi::frameBuffer> indirectLightFramebuffer = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, false, true, 8);
     indirectLightFramebuffer->init();
 
     std::shared_ptr<PbrGi::Texture> ibl = std::make_shared<PbrGi::Texture>();
     std::vector<std::string> prefilterIbl = {
-            "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m0_px.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m0_nx.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m0_py.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m0_ny.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m0_pz.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m0_nz.hdr",
-                "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m1_px.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m1_nx.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m1_py.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m1_ny.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m1_pz.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m1_nz.hdr",
-                "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m2_px.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m2_nx.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m2_py.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m2_ny.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m2_pz.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m2_nz.hdr",
-                "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m3_px.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\m3_nx.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m3_py.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m3_ny.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m3_pz.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m3_nz.hdr",
-                "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m4_px.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m4_nx.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m4_py.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m4_ny.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m4_pz.hdr",
-        "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\environment\\lightroom\\lightroom_14b\\m4_nz.hdr",
+                ".\\asset\\environment\\lightroom\\lightroom_14b\\m0_px.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m0_nx.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m0_py.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m0_ny.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m0_pz.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m0_nz.hdr",
+                ".\\asset\\environment\\lightroom\\lightroom_14b\\m1_px.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m1_nx.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m1_py.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m1_ny.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m1_pz.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m1_nz.hdr",
+                ".\\asset\\environment\\lightroom\\lightroom_14b\\m2_px.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m2_nx.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m2_py.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m2_ny.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m2_pz.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m2_nz.hdr",
+                ".\\asset\\environment\\lightroom\\lightroom_14b\\m3_px.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m3_nx.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m3_py.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m3_ny.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m3_pz.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m3_nz.hdr",
+                ".\\asset\\environment\\lightroom\\lightroom_14b\\m4_px.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m4_nx.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m4_py.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m4_ny.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m4_pz.hdr",
+        ".\\asset\\environment\\lightroom\\lightroom_14b\\m4_nz.hdr",
     };
     unsigned int prefilterIblMimmap = 5;
     ibl->initCubeTextureHDR(prefilterIbl, prefilterIblMimmap);
@@ -158,7 +164,7 @@ int main() {
     std::shared_ptr<PbrGi::SkyBox> iblSkyBox = std::make_shared<PbrGi::SkyBox>(SCR_WIDTH, SCR_HEIGHT, kCamera, ibl);
 
     std::shared_ptr<PbrGi::Texture> dfg = std::make_shared<PbrGi::Texture>();
-    dfg->init2DTextureHDR("C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\asset\\dfg\\dfg.hdr", false);
+    dfg->init2DTextureHDR(".\\asset\\dfg\\dfg.hdr", false);
 
     //glEnable(GL_POLYGON_OFFSET_FILL);
     //glPolygonOffset(1, 1);
@@ -175,6 +181,24 @@ int main() {
          -0.091809459030628, -0.091809459030628, -0.091809459030628,
          -0.006748970132321, -0.006748970132321, -0.006748970132321
     };
+
+    simpleShader->use();
+    unsigned int id;
+    ibl->getTextureId(id);
+    simpleShader->setTextureCube("sampler0_iblSpecular", id);
+
+    unsigned int id1;
+    dfg->getTextureId(id1);
+    simpleShader->setTexture2D("sampler0_iblDFG", id1);
+
+    simpleShader->setFloat("sampler0_iblSpecular_mipmapLevel", 4);
+
+    simpleShader->setVec3Float("iblSH", sh, 9);
+
+    GLint maxTextureUnits;
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+    std::cout << "此设备支持的最大纹理单元数量为: " << maxTextureUnits << std::endl;
+
 
     while (!glfwWindowShouldClose(window))
     {
@@ -193,18 +217,6 @@ int main() {
         simpleShader->setViewMatrix(kCamera->getViewMatrix());
         simpleShader->setProjectionMatrix(kCamera->getProjectMatrix());
         simpleShader->setProperty(kCamera->getCameraPosition(), "cameraPosition");
-
-        unsigned int id;
-        ibl->getTextureId(id);
-        simpleShader->setTextureCube("sampler0_iblSpecular", id);
-
-        unsigned int id1;
-        dfg->getTextureId(id1);
-        simpleShader->setTexture2D("sampler0_iblDFG", id1);
-
-        simpleShader->setFloat("sampler0_iblSpecular_mipmapLevel", 4);
-
-        simpleShader->setVec3Float("iblSH", sh, 9);
 
         su7->drawModel(simpleShader);
 

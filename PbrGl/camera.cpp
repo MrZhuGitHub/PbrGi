@@ -63,7 +63,7 @@ namespace PbrGi {
     }
 
     void camera::zoom(float fovOffset) {
-        fov_ = fov_ + fovOffset * 10;
+        fov_ = fov_ + fovOffset * 10.0;
         if (fov_ < 1) {
             fov_ = 1;
         }

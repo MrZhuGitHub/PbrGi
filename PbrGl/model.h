@@ -25,6 +25,7 @@ namespace PbrGi {
         glm::vec3 position;
         glm::vec3 normal;
         glm::vec2 texCoords;
+        glm::vec3 tangent;
     };
 
     struct material {
@@ -33,6 +34,8 @@ namespace PbrGi {
         std::optional<float> roughness;
         std::optional<float> opacityFactor;
         std::optional < std::shared_ptr<PbrGi::Texture>> baseColorTexture;
+        std::optional < std::shared_ptr<PbrGi::Texture>> roughnessTexture;
+        std::optional < std::shared_ptr<PbrGi::Texture>> normalTexture;
     };
 
     class mesh {

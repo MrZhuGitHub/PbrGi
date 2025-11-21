@@ -8,12 +8,14 @@
 #include <iostream>
 
 #include <glm/glm.hpp>
+#include <string>
+#include <map>
 
 namespace PbrGi {
 
     class Program {
     public:
-        Program(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
+        Program(std::vector<std::string> textureNames, const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
         ~Program();
 
         void use();
@@ -43,6 +45,10 @@ namespace PbrGi {
 
         void setTexture3D(std::string name, unsigned int textureId);
 
+        void setTexture2D(unsigned int binding, unsigned int textureId);
+
+        void setTextureCube(unsigned int binding, unsigned int textureId);
+
         void setTextureCube(std::string name, unsigned int textureId);
 
         void setVecFloat(std::string name, float* data, unsigned int count);
@@ -51,8 +57,7 @@ namespace PbrGi {
 
     private:
         unsigned int ID;
-        unsigned int mTextureCount;
-
+        std::map<std::string, unsigned int> mTextures;
     };
 
 }

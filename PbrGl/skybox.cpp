@@ -8,8 +8,9 @@ namespace PbrGi {
         , mWidth(width)
         , mHeight(height) {
 
-        mProgram = std::make_shared<PbrGi::Program>("C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\shader\\skyboxVertex.glsl", 
-                                                       "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\shader\\skyboxFragment.glsl");
+        std::vector<std::string> textureNames = { "skybox" };
+        mProgram = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\skyboxVertex.glsl", ".\\shader\\skyboxFragment.glsl");
+                                                       
 
         float cube[] = {
             // back face
@@ -94,7 +95,7 @@ namespace PbrGi {
 
         unsigned int textureId;
         mTexture->getTextureId(textureId);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+        mProgram->setTextureCube("skybox", textureId);
 
         glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 

@@ -4,7 +4,7 @@
 
 namespace PbrGi {
 
-    Program::Program(const char* vertexPath, const char* fragmentPath, const char* geometryPath) {
+    Program::Program(std::vector<std::string> textureNames,  const char* vertexPath, const char* fragmentPath, const char* geometryPath) {
 
         std::cout << vertexPath << std::endl;
         std::cout << fragmentPath << std::endl;
@@ -106,7 +106,12 @@ namespace PbrGi {
             glDeleteShader(geometry);
         }
 
-        mTextureCount = 0;
+        glUseProgram(ID);
+        for (unsigned int index = 0; index < textureNames.size(); index++) {
+            GLint location = glGetUniformLocation(ID, textureNames[index].c_str());
+            glUniform1i(location, index);
+            mTextures.insert(std::make_pair(textureNames[index], index));
+        }
     }
 
     void Program::use() {
@@ -178,29 +183,47 @@ namespace PbrGi {
     }
 
     void Program::setTexture2D(std::string name, unsigned int textureId) {
-        glActiveTexture(GL_TEXTURE0 + mTextureCount);
-        glBindTexture(GL_TEXTURE_2D, textureId);
-        GLint location = glGetUniformLocation(ID, name.c_str());
-        glUniform1i(location, mTextureCount);
-        mTextureCount++;
+        if (mTextures.find(name) != mTextures.end()) {
+            glActiveTexture(GL_TEXTURE0 + mTextures.at(name));
+            glBindTexture(GL_TEXTURE_2D, textureId);
+            GLint location = glGetUniformLocation(ID, name.c_str());
+            glUniform1i(location, mTextures.at(name));
+        }
+        else {
+            std::cout << name << std::endl;
+        }
     }
 
     void Program::setTexture3D(std::string name, unsigned int textureId) {
-        glActiveTexture(GL_TEXTURE0 + mTextureCount);
-        glBindTexture(GL_TEXTURE_3D, textureId);
-        GLint location = glGetUniformLocation(ID, name.c_str());
-        glUniform1i(location, mTextureCount);
-        mTextureCount++;
+        if (mTextures.find(name) != mTextures.end()) {
+            glActiveTexture(GL_TEXTURE0 + mTextures.at(name));
+            glBindTexture(GL_TEXTURE_3D, textureId);
+            GLint location = glGetUniformLocation(ID, name.c_str());
+            glUniform1i(location, mTextures.at(name));
+        }
     }
 
     void Program::setTextureCube(std::string name, unsigned int textureId) {
-        glActiveTexture(GL_TEXTURE0 + mTextureCount);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
-        GLint location = glGetUniformLocation(ID, name.c_str());
-        glUniform1i(location, mTextureCount);
-        mTextureCount++;
+        if (mTextures.find(name) != mTextures.end()) {
+            glActiveTexture(GL_TEXTURE0 + mTextures.at(name));
+            glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+            GLint location = glGetUniformLocation(ID, name.c_str());
+            glUniform1i(location, mTextures.at(name));
+        }
+        else {
+            std::cout << name << std::endl;
+        }
     }
 
+    void Program::setTexture2D(unsigned int binding, unsigned int textureId) {
+        glActiveTexture(GL_TEXTURE0 + binding);
+        glBindTexture(GL_TEXTURE_2D, textureId);
+    }
+
+    void Program::setTextureCube(unsigned int binding, unsigned int textureId) {
+        glActiveTexture(GL_TEXTURE0 + binding);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+    }
 
     Program::~Program() {
         glDeleteProgram(ID);

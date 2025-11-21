@@ -164,15 +164,17 @@ bool Texture::initCubeTextureHDR(std::vector<std::string> faces, unsigned int mi
     glBindTexture(GL_TEXTURE_CUBE_MAP, mTextureId);
 
     int baseWidth, baseHeight, nrChannels;
+
     for (unsigned int i = 0; i < 6; i++)
     {
         float* data = stbi_loadf(faces[i].c_str(), &baseWidth, &baseHeight, &nrChannels, 0);
         if (data)
         {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                0, GL_RGB16F, baseWidth, baseWidth, 0, GL_RGB, GL_FLOAT, data
+                0, GL_RGB16F, baseWidth, baseHeight, 0, GL_RGB, GL_FLOAT, data
             );
             stbi_image_free(data);
+            data = nullptr;
         }
         else
         {
@@ -180,16 +182,17 @@ bool Texture::initCubeTextureHDR(std::vector<std::string> faces, unsigned int mi
             stbi_image_free(data);
         }
     }
+
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, mipmapLevel - 1);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipmapLevel);
+    //glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
     for (int level = 0; level < mipmapLevel; level++) {
         for (unsigned int i = 0; i < 6; i++)
@@ -201,18 +204,20 @@ bool Texture::initCubeTextureHDR(std::vector<std::string> faces, unsigned int mi
             }
             if (data)
             {
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                    level, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data
-                );
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, level, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data);
                 stbi_image_free(data);
+                data = nullptr;
             }
             else
             {
-                std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+                std::cout << "Cubemap texture failed to load at path: " << faces[level * 6 + i] << std::endl;
                 stbi_image_free(data);
+                data = nullptr;
             }
         }
     }
+
+
 
     if (0 == glGetError()) {
         mTextureIfValid = true;
