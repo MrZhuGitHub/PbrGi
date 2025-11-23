@@ -108,18 +108,18 @@ int main() {
     std::vector<std::string> textureNames = {"baseColorTexture", "sampler0_iblDFG", "sampler0_iblSpecular", "roughnessTexture", "normalTexture", "metalnessTexture"};
     std::shared_ptr<PbrGi::Program> simpleShader = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\pbrVertex.glsl", ".\\shader\\pbrFragment.glsl");
 
-    //auto su7 = std::make_shared<PbrGi::model>("C:\\Users\\zhuhui\\Desktop\\pile.glb");
+    auto su7 = std::make_shared<PbrGi::model>("C:\\Users\\zhuhui\\Desktop\\pile.glb");
     //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\sphere.glb");
-    auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\su7.glb");
+    //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\su7.glb");
     std::vector<float> box = su7->get3DBox();
     glm::mat4 trans1(1.0f);
-    trans1 = glm::rotate(trans1, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    //trans1 = glm::rotate(trans1, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     
     trans1 = glm::translate(glm::inverse(trans1), glm::vec3(-0.5 * (box[0] + box[1]), -0.5 * (box[2] + box[3]), -0.5 * (box[4] + box[5])));
     su7->addInstance(trans1);
 
-    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(-400.0, 100.0, -400.0));
-    //kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f);
+    //kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(-400.0, 100.0, -400.0));
+    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f);
 
 
     std::shared_ptr<PbrGi::frameBuffer> indirectLightFramebuffer = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, false, true, 8);
@@ -164,7 +164,7 @@ int main() {
     std::shared_ptr<PbrGi::SkyBox> iblSkyBox = std::make_shared<PbrGi::SkyBox>(SCR_WIDTH, SCR_HEIGHT, kCamera, ibl);
 
     std::shared_ptr<PbrGi::Texture> dfg = std::make_shared<PbrGi::Texture>();
-    dfg->init2DTextureHDR(".\\asset\\dfg\\dfg.hdr", false);
+    dfg->init2DTextureHDR(".\\asset\\dfg\\dfg.hdr", true);
 
     //glEnable(GL_POLYGON_OFFSET_FILL);
     //glPolygonOffset(1, 1);
