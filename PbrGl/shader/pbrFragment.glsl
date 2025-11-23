@@ -82,7 +82,7 @@ void main()
 	float NdotV = dot(n, view);
 
 	vec3 diffuseColor = (1.0 - meta) * color.rgb;
-	float reflectance = 0.0;
+	float reflectance = 0.5;
 	vec3 f0 = 0.16 * reflectance * reflectance * (1.0 - meta) + color * meta;
 
 	vec3 dfg = textureLod(sampler0_iblDFG, vec2(abs(NdotV), rough), 0.0).rgb;
