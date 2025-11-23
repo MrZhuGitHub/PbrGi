@@ -231,6 +231,52 @@ bool Texture::initCubeTextureHDR(std::vector<std::string> faces, unsigned int mi
     }
 }
 
+bool Texture::TestInitCubeTextureHDR(std::vector<std::string> faces, unsigned int mipmapLevel) {
+    glGenTextures(1, &mTextureId);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, mTextureId);   
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, mipmapLevel - 1);
+
+    int baseWidth, baseHeight, nrChannels;
+    stbi_loadf(faces[0].c_str(), &baseWidth, &baseHeight, &nrChannels, 0);
+
+    glTexStorage2D(GL_TEXTURE_CUBE_MAP, mipmapLevel, GL_RGB16F, baseWidth, baseHeight);
+
+    for (int level = 0; level < mipmapLevel; level++) {
+        for (unsigned int i = 0; i < 6; i++)
+        {
+            int width, height, channels;
+            float* data = stbi_loadf(faces[level * 6 + i].c_str(), &width, &height, &channels, 0);
+            if (((baseWidth >> level) != width) || ((baseHeight >> level) != height)) {
+                std::cout << "baseWidth or baseHeight is not match mipmap level" << std::endl;
+            }
+            if (data)
+            {
+                glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, level, 0, 0, width, height, GL_RGB, GL_FLOAT, data);
+                stbi_image_free(data);
+                data = nullptr;
+            }
+            else
+            {
+                std::cout << "Cubemap texture failed to load at path: " << faces[level * 6 + i] << std::endl;
+                stbi_image_free(data);
+                data = nullptr;
+            }
+        }
+    }
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    return true;
+}
+
+
 bool Texture::init2DTextureHDR(std::string path, bool mipmap) {
     glGetError();
 

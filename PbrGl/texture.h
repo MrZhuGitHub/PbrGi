@@ -28,6 +28,8 @@ namespace PbrGi {
             bool initCubeTextureHDR(std::vector<std::string> paths, unsigned int mipmapLevel);
             bool init2DTextureHDR(std::string path, bool mipmap);
 
+            bool TestInitCubeTextureHDR(std::vector<std::string> paths, unsigned int mipmapLevel);
+
         private:
             unsigned int mTextureId;
             bool mTextureIfValid;

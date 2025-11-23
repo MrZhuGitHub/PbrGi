@@ -159,7 +159,7 @@ int main() {
         ".\\asset\\environment\\lightroom\\lightroom_14b\\m4_nz.hdr",
     };
     unsigned int prefilterIblMimmap = 5;
-    ibl->initCubeTextureHDR(prefilterIbl, prefilterIblMimmap);
+    ibl->TestInitCubeTextureHDR(prefilterIbl, prefilterIblMimmap);
 
     std::shared_ptr<PbrGi::SkyBox> iblSkyBox = std::make_shared<PbrGi::SkyBox>(SCR_WIDTH, SCR_HEIGHT, kCamera, ibl);
 
