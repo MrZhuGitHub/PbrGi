@@ -18,6 +18,8 @@ uniform sampler2D  sampler0_iblDFG;
 uniform samplerCube sampler0_iblSpecular;
 uniform float sampler0_iblSpecular_mipmapLevel;
 
+uniform bool metalnessTextureExist;
+uniform sampler2D metalnessTexture;
 uniform bool roughnessTextureExist;
 uniform sampler2D roughnessTexture;
 uniform bool normalTextureExist;
@@ -49,23 +51,23 @@ void main()
 {
 	float iblLuminance = 1.0;
 
-	vec3 color;
+	vec3 color = baseColor;;
 	if (baseColorTextureExist) {
 		color = texture(baseColorTexture, TexCoord).rgb;
-	} else {
-		color = baseColor;
+		color.r = srgb_to_linear(color.r);
+		color.g = srgb_to_linear(color.g);
+		color.b = srgb_to_linear(color.b);
 	}
 
-	//color.r = srgb_to_linear(color.r);
-	//color.g = srgb_to_linear(color.g);
-	//color.b = srgb_to_linear(color.b);
-
 	float rough = roughness;
-	float meta = metallic;
+	if (roughnessTextureExist) {
+		rough = texture(roughnessTexture, TexCoord).g;
+	}
 
-	//if (roughnessTextureExist) {
-	//	meta = texture(roughnessTexture, TexCoord).r;
-	//}
+	float meta = metallic;
+	if (metalnessTextureExist) {
+		meta = texture(metalnessTexture, TexCoord).g;
+	}
 
 	vec3 view = normalize(cameraPos - position);
 
@@ -80,7 +82,7 @@ void main()
 	float NdotV = dot(n, view);
 
 	vec3 diffuseColor = (1.0 - meta) * color.rgb;
-	float reflectance = 0.1;
+	float reflectance = 0.0;
 	vec3 f0 = 0.16 * reflectance * reflectance * (1.0 - meta) + color * meta;
 
 	vec3 dfg = textureLod(sampler0_iblDFG, vec2(abs(NdotV), rough), 0.0).rgb;

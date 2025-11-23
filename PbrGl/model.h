@@ -36,6 +36,7 @@ namespace PbrGi {
         std::optional < std::shared_ptr<PbrGi::Texture>> baseColorTexture;
         std::optional < std::shared_ptr<PbrGi::Texture>> roughnessTexture;
         std::optional < std::shared_ptr<PbrGi::Texture>> normalTexture;
+        std::optional < std::shared_ptr<PbrGi::Texture>> metalnessTexture;
     };
 
     class mesh {

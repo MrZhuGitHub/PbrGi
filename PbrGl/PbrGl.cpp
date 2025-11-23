@@ -105,7 +105,7 @@ int main() {
 
     //std::shared_ptr<PbrGi::Program> simpleShader = std::make_shared<PbrGi::Program>("C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\shader\\SimpleVertex.glsl", "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\shader\\SimpleFragment.glsl");
 
-    std::vector<std::string> textureNames = {"baseColorTexture", "sampler0_iblDFG", "sampler0_iblSpecular", "roughnessTexture", "normalTexture"};
+    std::vector<std::string> textureNames = {"baseColorTexture", "sampler0_iblDFG", "sampler0_iblSpecular", "roughnessTexture", "normalTexture", "metalnessTexture"};
     std::shared_ptr<PbrGi::Program> simpleShader = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\pbrVertex.glsl", ".\\shader\\pbrFragment.glsl");
 
     //auto su7 = std::make_shared<PbrGi::model>("C:\\Users\\zhuhui\\Desktop\\pile.glb");

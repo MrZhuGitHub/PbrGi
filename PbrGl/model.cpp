@@ -98,7 +98,6 @@ namespace PbrGi {
             program->setBool("baseColorTextureExist", false);
         }
 
-        /*
         if (material_.roughnessTexture.has_value()) {
             unsigned int id;
             if (material_.roughnessTexture.value()->getTextureId(id)) {
@@ -115,8 +114,23 @@ namespace PbrGi {
         else {
             program->setBool("roughnessTextureExist", false);
         }
-        */
 
+        if (material_.metalnessTexture.has_value()) {
+            unsigned int id;
+            if (material_.metalnessTexture.value()->getTextureId(id)) {
+                program->setTexture2D("metalnessTexture", id);
+                program->setBool("metalnessTextureExist", true);
+
+            }
+            else {
+                program->setBool("metalnessTextureExist", false);
+
+            }
+
+        }
+        else {
+            program->setBool("metalnessTextureExist", false);
+        }
 
         if (material_.normalTexture.has_value()) {
             program->setBool("normalTextureExist", true);
@@ -231,16 +245,16 @@ namespace PbrGi {
         std::vector<unsigned int> indices;
         material ma;
 
-        aiVector3D v0 = mesh->mVertices[mesh->mFaces->mIndices[0]];
-        aiVector3D v1 = mesh->mVertices[mesh->mFaces->mIndices[1]];
-        aiVector3D v2 = mesh->mVertices[mesh->mFaces->mIndices[2]];
+        // aiVector3D v0 = mesh->mVertices[mesh->mFaces->mIndices[0]];
+        // aiVector3D v1 = mesh->mVertices[mesh->mFaces->mIndices[1]];
+        // aiVector3D v2 = mesh->mVertices[mesh->mFaces->mIndices[2]];
 
-        if (calculateTriangleArea(v0, v1, v2) < 0.0f) {
-            std::cout << "back" << std::endl;
-        }
-        else {
-            std::cout << "front" << std::endl;
-        }
+        // if (calculateTriangleArea(v0, v1, v2) < 0.0f) {
+        //     std::cout << "back" << std::endl;
+        // }
+        // else {
+        //     std::cout << "front" << std::endl;
+        // }
 
         for (unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
@@ -316,8 +330,10 @@ namespace PbrGi {
             }
 
             if (material->GetTextureCount(aiTextureType_NORMALS) > 0) {
+                aiTextureMapping mapping;
+                unsigned int uvindex = 0;
                 aiString aiPath; // 存储纹理路径或嵌入式纹理标识
-                if (material->GetTexture(aiTextureType_NORMALS, 0, &aiPath) == AI_SUCCESS) {
+                if (material->GetTexture(aiTextureType_NORMALS, 0, &aiPath, &mapping, &uvindex) == AI_SUCCESS) {
                     if (aiPath.data[0] == '*') {
                         int textureIndex = std::stoi(aiPath.C_Str() + 1);
                         if (textureIndex >= 0 && textureIndex < (int)scene->mNumTextures) {
@@ -345,9 +361,11 @@ namespace PbrGi {
             }
 
             
-            if (material->GetTextureCount(aiTextureType_METALNESS) > 0) {
+            if (material->GetTextureCount(aiTextureType_DIFFUSE_ROUGHNESS) > 0) {
+                aiTextureMapping mapping;
+                unsigned int uvindex = 0;
                 aiString aiPath; // 存储纹理路径或嵌入式纹理标识
-                if (material->GetTexture(aiTextureType_METALNESS, 0, &aiPath) == AI_SUCCESS) {
+                if (material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &aiPath, &mapping, &uvindex) == AI_SUCCESS) {
                     if (aiPath.data[0] == '*') {
                         int textureIndex = std::stoi(aiPath.C_Str() + 1);
                         if (textureIndex >= 0 && textureIndex < (int)scene->mNumTextures) {
@@ -360,6 +378,7 @@ namespace PbrGi {
                                     unsigned int textureId;
                                     if (roughnessTexture->getTextureId(textureId)) {
                                         ma.roughnessTexture = roughnessTexture;
+                                        std::cout << "aiTextureType_DIFFUSE_ROUGHNESS:" << uvindex << std::endl;
                                     }
                                 }
                             }
@@ -374,6 +393,37 @@ namespace PbrGi {
                 }
             }
 
+            if (material->GetTextureCount(aiTextureType_METALNESS) > 0) {
+                aiTextureMapping mapping;
+                unsigned int uvindex = 0;
+                aiString aiPath; // 存储纹理路径或嵌入式纹理标识
+                if (material->GetTexture(aiTextureType_METALNESS, 0, &aiPath, &mapping, &uvindex) == AI_SUCCESS) {
+                    if (aiPath.data[0] == '*') {
+                        int textureIndex = std::stoi(aiPath.C_Str() + 1);
+                        if (textureIndex >= 0 && textureIndex < (int)scene->mNumTextures) {
+                            aiTexture* embeddedTex = scene->mTextures[textureIndex];
+                            if (embeddedTex->mHeight == 0) {
+                                int width, height, nrComponents;
+                                auto metalnessTexture = std::make_shared<Texture>();
+
+                                if (metalnessTexture->init2DTexture(reinterpret_cast<const unsigned char*>(embeddedTex->pcData), embeddedTex->mWidth, false)) {
+                                    unsigned int textureId;
+                                    if (metalnessTexture->getTextureId(textureId)) {
+                                        ma.metalnessTexture = metalnessTexture;
+                                        std::cout << "aiTextureType_METALNESS:" << uvindex << std::endl;
+                                    }
+                                }
+                            }
+                            else {
+                                std::cout << "no yasuo" << std::endl;
+                            }
+                        }
+                    }
+                    else {
+                        std::cout << "no qian ru shi" << std::endl;
+                    }
+                }
+            }
 
             if (material->GetTextureCount(aiTextureType_BASE_COLOR) > 0) {
                 aiString aiPath; // 存储纹理路径或嵌入式纹理标识
