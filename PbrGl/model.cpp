@@ -103,13 +103,11 @@ namespace PbrGi {
             if (material_.roughnessTexture.value()->getTextureId(id)) {
                 program->setTexture2D("roughnessTexture", id);
                 program->setBool("roughnessTextureExist", true);
-
             }
             else {
                 program->setBool("roughnessTextureExist", false);
 
             }
-
         }
         else {
             program->setBool("roughnessTextureExist", false);
@@ -126,7 +124,6 @@ namespace PbrGi {
                 program->setBool("metalnessTextureExist", false);
 
             }
-
         }
         else {
             program->setBool("metalnessTextureExist", false);
@@ -158,9 +155,23 @@ namespace PbrGi {
             program->setFloat("roughness", material_.roughness.value());
         }
         else {
-            program->setFloat("roughness", 1.0);
+            program->setFloat("roughness", 0.0);
         }
 
+        if (material_.clearCoat.has_value()) {
+            program->setFloat("clearCoat", material_.clearCoat.value());
+        }
+        else {
+            program->setFloat("clearCoat", 0.0);
+        }
+
+
+        if (material_.clearCoatRoughness.has_value()) {
+            program->setFloat("clearCoatRoughness", material_.clearCoatRoughness.value());
+        }
+        else {
+            program->setFloat("clearCoatRoughness", 0.0);
+        }
 
         glBindVertexArray(VAO_);
 
@@ -328,6 +339,18 @@ namespace PbrGi {
             else {
                 ma.opacityFactor = 1.0;
             }
+
+            float clearCoat = 0.0;
+            if (material->Get(AI_MATKEY_CLEARCOAT_FACTOR, clearCoat) == AI_SUCCESS) {
+                ma.clearCoat = clearCoat;
+            }
+
+
+            float clearCoatRough = 1.0;
+            if (material->Get(AI_MATKEY_CLEARCOAT_ROUGHNESS_FACTOR, clearCoatRough) == AI_SUCCESS) {
+                ma.clearCoatRoughness = clearCoatRough;
+            }
+
 
             if (material->GetTextureCount(aiTextureType_NORMALS) > 0) {
                 aiTextureMapping mapping;

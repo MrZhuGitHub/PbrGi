@@ -25,6 +25,22 @@ uniform sampler2D roughnessTexture;
 uniform bool normalTextureExist;
 uniform sampler2D normalTexture;
 
+uniform float clearCoat;
+uniform float clearCoatRoughness;
+
+
+float F_Schlick(float f0, float f90, float VoH) {
+    return f0 + (f90 - f0) * pow(1.0 - VoH, 5);
+}
+
+vec3 f0ClearCoatToSurface(const vec3 f0) {
+    // Approximation of iorTof0(f0ToIor(f0), 1.5)
+    // This assumes that the clear coat layer has an IOR of 1.5
+	vec3 newf0 = f0 * (f0 * (0.941892 - 0.263008 * f0) + 0.346479) - 0.0285998;
+	newf0 = clamp(newf0, 0.0, 1.0);
+	return newf0;
+}
+
 float srgb_to_linear(float c) {
     if (c <= 0.04045) {
         return c / 12.92;
@@ -61,12 +77,12 @@ void main()
 
 	float rough = roughness;
 	if (roughnessTextureExist) {
-		rough = texture(roughnessTexture, TexCoord).g;
+		rough = texture(roughnessTexture, TexCoord).a;
 	}
 
 	float meta = metallic;
 	if (metalnessTextureExist) {
-		meta = texture(metalnessTexture, TexCoord).g;
+		meta = texture(metalnessTexture, vec2(TexCoord[0], 1.0 - TexCoord[1])).r;
 	}
 
 	vec3 view = normalize(cameraPos - position);
@@ -85,6 +101,8 @@ void main()
 	float reflectance = 0.5;
 	vec3 f0 = 0.16 * reflectance * reflectance * (1.0 - meta) + color * meta;
 
+    f0 = mix(f0, f0ClearCoatToSurface(f0), clearCoat);
+
 	vec3 dfg = textureLod(sampler0_iblDFG, vec2(abs(NdotV), rough), 0.0).rgb;
 	vec3 splitsum = mix(dfg.xxx, dfg.yyy, f0);
 	float lod = sampler0_iblSpecular_mipmapLevel * rough * (2.0 - rough);
@@ -96,6 +114,15 @@ void main()
 							+ iblSH[4] * (n.y * n.x) + iblSH[5] * (n.y * n.z) + iblSH[6] * (3.0 * n.z * n.z - 1.0) + iblSH[7] * (n.z * n.x) + iblSH[8] * (n.x * n.x - n.y * n.y);
 
 	vec3 Fd = diffuseColor * max(diffuseIrradiance, 0.0) * (1.0 - splitsum);
+
+	//clear coat
+    float Fc = F_Schlick(0.04, 1.0, abs(NdotV)) * clearCoat;
+    Fd = (1.0 - Fc) * Fd;
+    Fr = (1.0 - Fc) * (1.0 - Fc) * Fr;
+
+	float clearCoatlod = sampler0_iblSpecular_mipmapLevel * clearCoatRoughness * (2.0 - clearCoatRoughness);
+    Fr += textureLod(sampler0_iblSpecular, reflect, clearCoatlod).rgb * Fc;
+
 
 	vec3 hdrColor = iblLuminance * (Fd + Fr);
 

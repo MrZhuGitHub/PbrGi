@@ -33,6 +33,8 @@ namespace PbrGi {
         std::optional<float> metallic;
         std::optional<float> roughness;
         std::optional<float> opacityFactor;
+        std::optional<float> clearCoat;
+        std::optional<float> clearCoatRoughness;
         std::optional < std::shared_ptr<PbrGi::Texture>> baseColorTexture;
         std::optional < std::shared_ptr<PbrGi::Texture>> roughnessTexture;
         std::optional < std::shared_ptr<PbrGi::Texture>> normalTexture;
