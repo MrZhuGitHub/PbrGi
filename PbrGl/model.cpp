@@ -164,7 +164,7 @@ namespace PbrGi {
         else {
             program->setFloat("clearCoat", 0.0);
         }
-
+        
 
         if (material_.clearCoatRoughness.has_value()) {
             program->setFloat("clearCoatRoughness", material_.clearCoatRoughness.value());

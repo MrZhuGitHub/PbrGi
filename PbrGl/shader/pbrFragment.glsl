@@ -103,7 +103,7 @@ void main()
 
     f0 = mix(f0, f0ClearCoatToSurface(f0), clearCoat);
 
-	vec3 dfg = textureLod(sampler0_iblDFG, vec2(abs(NdotV), rough), 0.0).rgb;
+	vec3 dfg = textureLod(sampler0_iblDFG, vec2(abs(NdotV), 1.0 - rough), 0.0).rgb;
 	vec3 splitsum = mix(dfg.xxx, dfg.yyy, f0);
 	float lod = sampler0_iblSpecular_mipmapLevel * rough * (2.0 - rough);
 	vec3 reflect = 2.0 * NdotV * n - view;

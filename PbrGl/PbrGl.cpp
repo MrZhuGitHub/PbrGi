@@ -114,7 +114,7 @@ int main() {
     std::vector<float> box = su7->get3DBox();
     glm::mat4 trans1(1.0f);
     trans1 = glm::rotate(trans1, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    
+        
     trans1 = glm::translate(glm::inverse(trans1), glm::vec3(-0.5 * (box[0] + box[1]), -0.5 * (box[2] + box[3]), -0.5 * (box[4] + box[5])));
     su7->addInstance(trans1);
 
