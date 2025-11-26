@@ -76,14 +76,18 @@ void main()
 	}
 
 	float rough = roughness;
+	/*
 	if (roughnessTextureExist) {
 		rough = texture(roughnessTexture, TexCoord).a;
 	}
+	*/
 
 	float meta = metallic;
+	/*
 	if (metalnessTextureExist) {
 		meta = texture(metalnessTexture, vec2(TexCoord[0], 1.0 - TexCoord[1])).r;
 	}
+	*/
 
 	vec3 view = normalize(cameraPos - position);
 
@@ -101,7 +105,7 @@ void main()
 	float reflectance = 0.5;
 	vec3 f0 = 0.16 * reflectance * reflectance * (1.0 - meta) + color * meta;
 
-    f0 = mix(f0, f0ClearCoatToSurface(f0), clearCoat);
+    //f0 = mix(f0, f0ClearCoatToSurface(f0), clearCoat);
 
 	vec3 dfg = textureLod(sampler0_iblDFG, vec2(abs(NdotV), 1.0 - rough), 0.0).rgb;
 	vec3 splitsum = mix(dfg.xxx, dfg.yyy, f0);
@@ -118,7 +122,7 @@ void main()
 	//clear coat
     float Fc = F_Schlick(0.04, 1.0, abs(NdotV)) * clearCoat;
     Fd = (1.0 - Fc) * Fd;
-    Fr = (1.0 - Fc) * (1.0 - Fc) * Fr;
+    Fr = (1.0 - Fc) * Fr;
 
 	float clearCoatlod = sampler0_iblSpecular_mipmapLevel * clearCoatRoughness * (2.0 - clearCoatRoughness);
     Fr += textureLod(sampler0_iblSpecular, reflect, clearCoatlod).rgb * Fc;
