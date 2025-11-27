@@ -141,7 +141,17 @@ namespace PbrGi {
             program->setBool("normalTextureExist", false);
         }
 
+        if (material_.emissiveTexture.has_value()) {
+            program->setBool("emissionTextureExist", true);
+            unsigned int id;
+            if (material_.emissiveTexture.value()->getTextureId(id)) {
+                program->setTexture2D("emissionTexture", id);
+            }
 
+        }
+        else {
+            program->setBool("emissionTextureExist", false);
+        }
 
         if (material_.metallic.has_value()) {
             program->setFloat("metallic", material_.metallic.value());
@@ -384,11 +394,11 @@ namespace PbrGi {
             }
 
             
-            if (material->GetTextureCount(aiTextureType_DIFFUSE_ROUGHNESS) > 0) {
+            if (material->GetTextureCount(aiTextureType_GLTF_METALLIC_ROUGHNESS) > 0) {
                 aiTextureMapping mapping;
                 unsigned int uvindex = 0;
                 aiString aiPath; // 存储纹理路径或嵌入式纹理标识
-                if (material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &aiPath, &mapping, &uvindex) == AI_SUCCESS) {
+                if (material->GetTexture(aiTextureType_GLTF_METALLIC_ROUGHNESS, 0, &aiPath, &mapping, &uvindex) == AI_SUCCESS) {
                     if (aiPath.data[0] == '*') {
                         int textureIndex = std::stoi(aiPath.C_Str() + 1);
                         if (textureIndex >= 0 && textureIndex < (int)scene->mNumTextures) {
@@ -416,11 +426,11 @@ namespace PbrGi {
                 }
             }
 
-            if (material->GetTextureCount(aiTextureType_METALNESS) > 0) {
+            if (material->GetTextureCount(aiTextureType_GLTF_METALLIC_ROUGHNESS) > 0) {
                 aiTextureMapping mapping;
                 unsigned int uvindex = 0;
                 aiString aiPath; // 存储纹理路径或嵌入式纹理标识
-                if (material->GetTexture(aiTextureType_METALNESS, 0, &aiPath, &mapping, &uvindex) == AI_SUCCESS) {
+                if (material->GetTexture(aiTextureType_GLTF_METALLIC_ROUGHNESS, 0, &aiPath, &mapping, &uvindex) == AI_SUCCESS) {
                     if (aiPath.data[0] == '*') {
                         int textureIndex = std::stoi(aiPath.C_Str() + 1);
                         if (textureIndex >= 0 && textureIndex < (int)scene->mNumTextures) {
@@ -474,7 +484,39 @@ namespace PbrGi {
                     }
                 }
             }
+
+            if (material->GetTextureCount(aiTextureType_EMISSIVE) > 0) {
+                std::cout << "emissiveTexture" << std::endl;
+
+                aiString aiPath; // 存储纹理路径或嵌入式纹理标识
+                if (material->GetTexture(aiTextureType_EMISSIVE, 0, &aiPath) == AI_SUCCESS) {
+                    if (aiPath.data[0] == '*') {
+                        int textureIndex = std::stoi(aiPath.C_Str() + 1);
+                        if (textureIndex >= 0 && textureIndex < (int)scene->mNumTextures) {
+                            aiTexture* embeddedTex = scene->mTextures[textureIndex];
+                            if (embeddedTex->mHeight == 0) {
+                                int width, height, nrComponents;
+                                auto emissionTexture = std::make_shared<Texture>();
+
+                                if (emissionTexture->init2DTexture(reinterpret_cast<const unsigned char*>(embeddedTex->pcData), embeddedTex->mWidth, true)) {
+                                    unsigned int textureId;
+                                    if (emissionTexture->getTextureId(textureId)) {
+                                        ma.emissiveTexture = emissionTexture;
+                                    }
+                                }
+                            }
+                            else {
+                                std::cout << "no yasuo" << std::endl;
+                            }
+                        }
+                    }
+                    else {
+                        std::cout << "no qian ru shi" << std::endl;
+                    }
+                }
+            }
         }
+
 
         return std::make_shared<PbrGi::mesh>(vertices, indices, ma);
     }

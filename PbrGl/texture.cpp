@@ -4,6 +4,8 @@
 #define STBI_FAILURE_USERMSG
 #include "stb_image.h"
 
+#include <math.h>
+
 namespace PbrGi {
 
 Texture::Texture() {
@@ -15,7 +17,8 @@ Texture::~Texture() {
 }
 
 bool Texture::init2DTexture(const unsigned char* imageData, unsigned int size, bool mipmap) {
-    glGetError();
+    // 清除之前的错误
+    while (glGetError() != GL_NO_ERROR);
 
     glGenTextures(1, &mTextureId);
     glBindTexture(GL_TEXTURE_2D, mTextureId);
@@ -33,32 +36,69 @@ bool Texture::init2DTexture(const unsigned char* imageData, unsigned int size, b
 
     int width, height, nrChannels;
     unsigned char* data = stbi_load_from_memory(imageData, size, &width, &height, &nrChannels, 0);
-
-    if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        if (mipmap) {
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
+    if (!data) {
+        // 图像加载失败，清理并返回
+        mTextureIfValid = false;
+        glBindTexture(GL_TEXTURE_2D, 0);
+        return false;
     }
-    else {
+
+    // 关键修正1：计算Mipmap层级，但即使不用Mipmap，层级数至少为1
+    int mipmapLevels = 1; // 默认不使用Mipmap时，至少1级
+    if (mipmap) {
+        mipmapLevels = 1 + floor(log2(std::max(width, height)));
+    }
+
+    GLenum internalFormat = GL_RGB; // 默认格式
+    GLenum dataFormat = GL_RGB;
+
+    // 根据通道数选择格式
+    if (nrChannels == 1) {
+        // 关键修正2：使用更标准的单通道内部格式
+        internalFormat = GL_R8;    // 或者使用 GL_RED
+        dataFormat = GL_RED;
+    }
+    else if (nrChannels == 3) {
+        internalFormat = GL_RGB8;
+        dataFormat = GL_RGB;
+    }
+    else if (nrChannels == 4) {
+        internalFormat = GL_RGBA8;
+        dataFormat = GL_RGBA;
+    }
+
+    // 关键修正3：使用计算出的层级数（至少为1）分配纹理存储
+    glTexStorage2D(GL_TEXTURE_2D, mipmapLevels, internalFormat, width, height);
+
+    // 检查纹理存储是否成功
+    if (glGetError() != GL_NO_ERROR) {
         stbi_image_free(data);
         mTextureIfValid = false;
         glBindTexture(GL_TEXTURE_2D, 0);
         return false;
     }
 
-    if (0 == glGetError()) {
-        stbi_image_free(data);
+    // 上传图像数据到第0级Mipmap
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data);
+
+    // 关键修正4：如果启用Mipmap，则生成Mipmap链
+    if (mipmap) {
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+    stbi_image_free(data);
+
+    // 最终错误检查
+    if (glGetError() == GL_NO_ERROR) {
         mTextureIfValid = true;
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_2D, 0); // 解绑
         return true;
     }
     else {
-        stbi_image_free(data);
         mTextureIfValid = false;
         glBindTexture(GL_TEXTURE_2D, 0);
         return false;
-    }    
+    }
 }
 
 bool Texture::init2DTexture(std::string path, bool mipmap) {
@@ -80,19 +120,55 @@ bool Texture::init2DTexture(std::string path, bool mipmap) {
 
     int width, height, nrChannels;
     unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+    int mipmapLevel = 1 + floor(log2(std::max(width, height)));
+    if (nrChannels == 1) {
+        glTexStorage2D(GL_TEXTURE_2D, mipmapLevel, GL_R, width, height);
+        if (data) {
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_R, GL_UNSIGNED_BYTE, data);
 
-    if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        if (mipmap) {
-            glGenerateMipmap(GL_TEXTURE_2D);
+            if (mipmap) {
+                glGenerateMipmap(GL_TEXTURE_2D);
+            }
+        }
+        else {
+            stbi_image_free(data);
+            mTextureIfValid = false;
+            glBindTexture(GL_TEXTURE_2D, 0);
+            return false;
         }
     }
-    else {
-        stbi_image_free(data);
-        mTextureIfValid = false;
-        glBindTexture(GL_TEXTURE_2D, 0);
-        return false;
+    else if (nrChannels == 3) {
+        glTexStorage2D(GL_TEXTURE_2D, mipmapLevel, GL_RGB, width, height);
+        if (data) {
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+            if (mipmap) {
+                glGenerateMipmap(GL_TEXTURE_2D);
+            }
+        }
+        else {
+            stbi_image_free(data);
+            mTextureIfValid = false;
+            glBindTexture(GL_TEXTURE_2D, 0);
+            return false;
+        }
     }
+    else if (nrChannels == 4) {
+        glTexStorage2D(GL_TEXTURE_2D, mipmapLevel, GL_RGBA, width, height);
+        if (data) {
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            if (mipmap) {
+                glGenerateMipmap(GL_TEXTURE_2D);
+            }
+        }
+        else {
+            stbi_image_free(data);
+            mTextureIfValid = false;
+            glBindTexture(GL_TEXTURE_2D, 0);
+            return false;
+        }
+    }
+
+
 
     if (0 == glGetError()) {
         stbi_image_free(data);

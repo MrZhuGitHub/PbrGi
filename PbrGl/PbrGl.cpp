@@ -103,14 +103,14 @@ int main() {
 
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-    //std::shared_ptr<PbrGi::Program> simpleShader = std::make_shared<PbrGi::Program>("C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\shader\\SimpleVertex.glsl", "C:\\Users\\zhuhui\\source\\repos\\PbrGl\\PbrGl\\shader\\SimpleFragment.glsl");
-
-    std::vector<std::string> textureNames = {"baseColorTexture", "sampler0_iblDFG", "sampler0_iblSpecular", "roughnessTexture", "normalTexture", "metalnessTexture"};
+    std::vector<std::string> textureNames = {"baseColorTexture", "sampler0_iblDFG", "sampler0_iblSpecular", "roughnessTexture", "normalTexture", "metalnessTexture", "emissionTexture"};
     std::shared_ptr<PbrGi::Program> simpleShader = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\pbrVertex.glsl", ".\\shader\\pbrFragment.glsl");
 
-    //auto su7 = std::make_shared<PbrGi::model>("C:\\Users\\zhuhui\\Desktop\\pile.glb");
+    //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\DamagedHelmet.glb");
     //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\sphere.glb");
     auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\su7.glb");
+    //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\sponza.glb");
+
     std::vector<float> box = su7->get3DBox();
     glm::mat4 trans1(1.0f);
     trans1 = glm::rotate(trans1, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -118,8 +118,8 @@ int main() {
     trans1 = glm::translate(glm::inverse(trans1), glm::vec3(-0.5 * (box[0] + box[1]), -0.5 * (box[2] + box[3]), -0.5 * (box[4] + box[5])));
     su7->addInstance(trans1);
 
-    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(-400.0, 100.0, -400.0));
-    //kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f);
+    //kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(-400.0, 100.0, -400.0));
+    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f);
 
 
     std::shared_ptr<PbrGi::frameBuffer> indirectLightFramebuffer = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, false, true, 8);

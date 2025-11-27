@@ -24,10 +24,11 @@ uniform bool roughnessTextureExist;
 uniform sampler2D roughnessTexture;
 uniform bool normalTextureExist;
 uniform sampler2D normalTexture;
+uniform bool emissionTextureExist;
+uniform sampler2D emissionTexture;
 
 uniform float clearCoat;
 uniform float clearCoatRoughness;
-
 
 float F_Schlick(float f0, float f90, float VoH) {
     return f0 + (f90 - f0) * pow(1.0 - VoH, 5);
@@ -76,18 +77,15 @@ void main()
 	}
 
 	float rough = roughness;
-	/*
 	if (roughnessTextureExist) {
-		rough = texture(roughnessTexture, TexCoord).a;
+		rough = texture(roughnessTexture, TexCoord).g;
 	}
-	*/
+
 
 	float meta = metallic;
-	/*
 	if (metalnessTextureExist) {
-		meta = texture(metalnessTexture, vec2(TexCoord[0], 1.0 - TexCoord[1])).r;
+		meta = texture(metalnessTexture, TexCoord).b;
 	}
-	*/
 
 	vec3 view = normalize(cameraPos - position);
 
@@ -127,8 +125,11 @@ void main()
 	float clearCoatlod = sampler0_iblSpecular_mipmapLevel * clearCoatRoughness * (2.0 - clearCoatRoughness);
     Fr += textureLod(sampler0_iblSpecular, reflect, clearCoatlod).rgb * Fc;
 
-
 	vec3 hdrColor = iblLuminance * (Fd + Fr);
+
+	if (emissionTextureExist) {
+		hdrColor = hdrColor + texture(emissionTexture, TexCoord).rgb;
+	}
 
     const float A = 2.51;
     const float B = 0.03;
