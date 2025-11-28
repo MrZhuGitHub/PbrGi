@@ -1,10 +1,6 @@
-/Debug
-
-/.vs
-
-/x64
-
-/PbrGI/Debug
-
-/PbrGI/x64
+/Debug/
+/.vs/
+/x64/
+PbrGI/Debug/
+PbrGI/x64/
 
