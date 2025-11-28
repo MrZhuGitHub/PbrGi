@@ -1,6 +1,6 @@
 /Debug/
 /.vs/
 /x64/
-PbrGI/Debug/
-PbrGI/x64/
+PbrGl/Debug/*
+PbrGl/x64/Debug/*
 
