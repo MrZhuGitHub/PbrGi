@@ -108,8 +108,8 @@ int main() {
 
     //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\DamagedHelmet.glb");
     //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\sphere.glb");
-    auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\su7.glb");
-    //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\sponza.glb");
+    //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\su7.glb");
+    auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\sponza.glb");
 
     std::vector<float> box = su7->get3DBox();
     glm::mat4 trans1(1.0f);
@@ -119,7 +119,7 @@ int main() {
     su7->addInstance(trans1);
 
     //kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(-400.0, 100.0, -400.0));
-    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f);
+    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 2.5f, 25000.0f);
 
 
     std::shared_ptr<PbrGi::frameBuffer> indirectLightFramebuffer = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, false, true, 8);
