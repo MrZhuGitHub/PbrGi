@@ -13,7 +13,7 @@
 namespace PbrGi {
     class Texture {
         public:
-            Texture();
+            Texture(unsigned int textureId = 0);
             ~Texture();
             
             bool getTextureId(unsigned int& textureId) {
@@ -21,6 +21,7 @@ namespace PbrGi {
                 return mTextureIfValid;
             }
 
+            bool init2DTexture(unsigned int width, unsigned int height, unsigned int format, bool mipmap);
             bool init2DTexture(const unsigned char* imageData, unsigned int size, bool mipmap);
             bool init2DTexture(std::string path, bool mipmap);
             bool init2DTexture(std::vector<std::string> paths, unsigned int mipmapLevel);

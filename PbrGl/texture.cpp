@@ -8,17 +8,30 @@
 
 namespace PbrGi {
 
-Texture::Texture() {
+Texture::Texture(unsigned int textureId)
+    : mTextureId(textureId) {
 
+    if (0 != textureId) {
+        mTextureIfValid = true;
+    } else {
+        mTextureIfValid = false;
+    }
 }
 
 Texture::~Texture() {
 
 }
 
+bool Texture::init2DTexture(unsigned int width, unsigned int height, unsigned int format, bool mipmap) {
+    return true;
+}
+
 bool Texture::init2DTexture(const unsigned char* imageData, unsigned int size, bool mipmap) {
-    // 清除之前的错误
-    while (glGetError() != GL_NO_ERROR);
+    if (mTextureIfValid) {
+        return mTextureIfValid;
+    }
+
+    glGetError();
 
     glGenTextures(1, &mTextureId);
     glBindTexture(GL_TEXTURE_2D, mTextureId);
@@ -37,25 +50,21 @@ bool Texture::init2DTexture(const unsigned char* imageData, unsigned int size, b
     int width, height, nrChannels;
     unsigned char* data = stbi_load_from_memory(imageData, size, &width, &height, &nrChannels, 0);
     if (!data) {
-        // 图像加载失败，清理并返回
         mTextureIfValid = false;
         glBindTexture(GL_TEXTURE_2D, 0);
         return false;
     }
 
-    // 关键修正1：计算Mipmap层级，但即使不用Mipmap，层级数至少为1
-    int mipmapLevels = 1; // 默认不使用Mipmap时，至少1级
+    int mipmapLevels = 1; 
     if (mipmap) {
         mipmapLevels = 1 + floor(log2(std::max(width, height)));
     }
 
-    GLenum internalFormat = GL_RGB; // 默认格式
+    GLenum internalFormat = GL_RGB;
     GLenum dataFormat = GL_RGB;
 
-    // 根据通道数选择格式
     if (nrChannels == 1) {
-        // 关键修正2：使用更标准的单通道内部格式
-        internalFormat = GL_R8;    // 或者使用 GL_RED
+        internalFormat = GL_R8;
         dataFormat = GL_RED;
     }
     else if (nrChannels == 3) {
@@ -67,10 +76,8 @@ bool Texture::init2DTexture(const unsigned char* imageData, unsigned int size, b
         dataFormat = GL_RGBA;
     }
 
-    // 关键修正3：使用计算出的层级数（至少为1）分配纹理存储
     glTexStorage2D(GL_TEXTURE_2D, mipmapLevels, internalFormat, width, height);
 
-    // 检查纹理存储是否成功
     if (glGetError() != GL_NO_ERROR) {
         stbi_image_free(data);
         mTextureIfValid = false;
@@ -78,20 +85,17 @@ bool Texture::init2DTexture(const unsigned char* imageData, unsigned int size, b
         return false;
     }
 
-    // 上传图像数据到第0级Mipmap
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data);
 
-    // 关键修正4：如果启用Mipmap，则生成Mipmap链
     if (mipmap) {
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 
     stbi_image_free(data);
 
-    // 最终错误检查
     if (glGetError() == GL_NO_ERROR) {
         mTextureIfValid = true;
-        glBindTexture(GL_TEXTURE_2D, 0); // 解绑
+        glBindTexture(GL_TEXTURE_2D, 0);
         return true;
     }
     else {
@@ -102,6 +106,9 @@ bool Texture::init2DTexture(const unsigned char* imageData, unsigned int size, b
 }
 
 bool Texture::init2DTexture(std::string path, bool mipmap) {
+    if (mTextureIfValid) {
+        return mTextureIfValid;
+    }
     glGetError();
 
     glGenTextures(1, &mTextureId);
@@ -189,6 +196,9 @@ bool Texture::init2DTexture(std::vector<std::string> paths, unsigned int mipmapL
 }
 
 bool Texture::initCubeTexture(std::vector<std::string> faces, bool mimmap) {
+    if (mTextureIfValid) {
+        return mTextureIfValid;
+    }
     glGetError();
 
     glGenTextures(1, &mTextureId);
@@ -234,6 +244,9 @@ bool Texture::initCubeTexture(std::vector<std::string> faces, bool mimmap) {
 }
 
 bool Texture::initCubeTextureHDR(std::vector<std::string> faces, unsigned int mipmapLevel) {
+    if (mTextureIfValid) {
+        return mTextureIfValid;
+    }
     glGetError();
 
     glGenTextures(1, &mTextureId);
@@ -308,6 +321,9 @@ bool Texture::initCubeTextureHDR(std::vector<std::string> faces, unsigned int mi
 }
 
 bool Texture::TestInitCubeTextureHDR(std::vector<std::string> faces, unsigned int mipmapLevel) {
+    if (mTextureIfValid) {
+        return mTextureIfValid;
+    }
     glGenTextures(1, &mTextureId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, mTextureId);   
 
@@ -354,6 +370,9 @@ bool Texture::TestInitCubeTextureHDR(std::vector<std::string> faces, unsigned in
 
 
 bool Texture::init2DTextureHDR(std::string path, bool mipmap) {
+    if (mTextureIfValid) {
+        return mTextureIfValid;
+    }
     glGetError();
 
     glGenTextures(1, &mTextureId);

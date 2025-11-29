@@ -17,7 +17,7 @@ namespace PbrGi {
 
     }
 
-    bool frameBuffer::init() {
+    bool frameBuffer::init(std::vector<std::shared_ptr<Texture>> mutipleColorTextures) {
         if (mass_) {
             glGenFramebuffers(1, &frameBufferId_);
             glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId_);

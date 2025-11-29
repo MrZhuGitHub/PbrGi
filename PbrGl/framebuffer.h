@@ -1,6 +1,11 @@
 #ifndef _FRAME_BUFFER_H_
 #define _FRAME_BUFFER_H_
 
+#include <vector>
+#include <memory>
+
+#include "texture.h"
+
 namespace PbrGi {
 
     enum PIXEL {
@@ -16,7 +21,7 @@ namespace PbrGi {
 
         ~frameBuffer();
 
-        bool init();
+        bool init(std::vector<std::shared_ptr<Texture>> mutipleColorTextures = {});
 
         bool setup();
 
@@ -24,8 +29,11 @@ namespace PbrGi {
 
         bool blitToFrameBuffer(unsigned int frameBuffer);
 
-        unsigned int getTexture() const {
-            return textureId_;
+        std::shared_ptr<Texture> getColorBuffer(unsigned int index = 0) const {
+            if (0 == index) {
+                return std::make_shared<Texture>(textureId_);
+            }
+            return nullptr;
         }
 
         unsigned int getFrameBuffer() const {
@@ -36,8 +44,8 @@ namespace PbrGi {
             return renderBufferId_;
         }
 
-        unsigned int getDepthBuffer() const {
-            return depthbufferTextureId_;
+        std::shared_ptr<Texture> getDepthBuffer() const {
+            return std::make_shared<Texture>(depthbufferTextureId_);
         }
 
         bool readPixels(unsigned int x, unsigned int y, float* pixels);

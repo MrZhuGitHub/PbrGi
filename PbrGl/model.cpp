@@ -227,6 +227,9 @@ namespace PbrGi {
     }
 
     void model::loadModel(std::string path) {
+        if (path.empty()) {
+            return;
+        }
         Assimp::Importer import;
         const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate |aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_FlipWindingOrder);
 
@@ -519,6 +522,23 @@ namespace PbrGi {
 
 
         return std::make_shared<PbrGi::mesh>(vertices, indices, ma);
+    }
+
+    customModel::customModel(std::vector<float> geometryData)
+        : model(std::string()) {
+
+    }
+
+    void customModel::drawModel(std::shared_ptr<Program> program) {
+
+    }
+
+    void customModel::addInstance(glm::mat4 posAndSizeMat4) {
+
+    }
+
+    customModel::~customModel() {
+
     }
 }
 
