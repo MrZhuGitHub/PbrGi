@@ -1,0 +1,2 @@
+#define SCR_WIDTH 2000
+#define SCR_HEIGHT 1200

@@ -23,6 +23,48 @@ Texture::~Texture() {
 }
 
 bool Texture::init2DTexture(unsigned int width, unsigned int height, unsigned int format, bool mipmap) {
+    if (mTextureIfValid) {
+        return mTextureIfValid;
+    }
+
+    glGetError();
+
+    glGenTextures(1, &mTextureId);
+    glBindTexture(GL_TEXTURE_2D, mTextureId);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    if (mipmap) {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+    else {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+
+    int mipmapLevels = 1;
+    if (mipmap) {
+        mipmapLevels = 1 + floor(log2(std::max(width, height)));
+    }
+
+    glTexStorage2D(GL_TEXTURE_2D, mipmapLevels, format, width, height);
+
+    if (mipmap) {
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+    if (glGetError() == GL_NO_ERROR) {
+        mTextureIfValid = true;
+        glBindTexture(GL_TEXTURE_2D, 0);
+        return true;
+    }
+    else {
+        mTextureIfValid = false;
+        glBindTexture(GL_TEXTURE_2D, 0);
+        return false;
+    }
+
     return true;
 }
 

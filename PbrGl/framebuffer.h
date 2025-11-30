@@ -33,6 +33,11 @@ namespace PbrGi {
             if (0 == index) {
                 return std::make_shared<Texture>(textureId_);
             }
+            else {
+                if (index <= mMutipleColorTextures.size()) {
+                    return mMutipleColorTextures[index - 1];
+                }
+            }
             return nullptr;
         }
 
@@ -65,6 +70,7 @@ namespace PbrGi {
         unsigned int samples_;
         bool initSuccess_;
         bool depthBuffer_;
+        std::vector<std::shared_ptr<Texture>> mMutipleColorTextures;
     };
 
 }

@@ -18,6 +18,7 @@ namespace PbrGi {
     }
 
     bool frameBuffer::init(std::vector<std::shared_ptr<Texture>> mutipleColorTextures) {
+        mMutipleColorTextures = mutipleColorTextures;
         if (mass_) {
             glGenFramebuffers(1, &frameBufferId_);
             glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId_);
@@ -76,6 +77,16 @@ namespace PbrGi {
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthbufferTextureId_, 0);
 
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId_, 0);
+
+                std::vector<GLenum> attachments;
+                for (int i = 1; i <= mMutipleColorTextures.size(); i++) {
+                    unsigned int textureId;
+                    if (mMutipleColorTextures[i - 1]->getTextureId(textureId)) {
+                        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textureId, 0);
+                        attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
+                    }
+                }
+                glDrawBuffers(attachments.size(), attachments.data());
             }
 
             if (!depthBuffer_) {
@@ -97,6 +108,16 @@ namespace PbrGi {
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId_, 0);
 
                 glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBufferId_);
+
+                std::vector<GLenum> attachments;
+                for (int i = 1; i <= mMutipleColorTextures.size(); i++) {
+                    unsigned int textureId;
+                    if (mMutipleColorTextures[i - 1]->getTextureId(textureId)) {
+                        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textureId, 0);
+                        attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
+                    }
+                }
+                glDrawBuffers(attachments.size(), attachments.data());
             }
 
             if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {

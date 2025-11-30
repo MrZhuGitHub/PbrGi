@@ -9,9 +9,7 @@
 #include "skybox.h"
 
 #include <iostream>
-
-#define SCR_WIDTH 2000
-#define SCR_HEIGHT 1200
+#include "common.hpp"
 
 float kReleaseMouseX = 0.0f, kReleaseMouseY = 0.0f;
 float kPushMouseX = 0.0f, kPushMouseY = 0.0f;
