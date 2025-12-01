@@ -2,7 +2,8 @@
 #include "common.hpp"
 
 namespace PbrGi {
-    GaussianBlurPass::GaussianBlurPass() {
+    GaussianBlurPass::GaussianBlurPass(std::shared_ptr<Texture> depth)
+        : mDepth(depth) {
 
         std::vector<std::string> textureNames = {"depthTexture"};
         mRenderProgram = std::make_shared<Program>(textureNames,  ".\\shader\\gaussianBlurVertex.glsl", ".\\shader\\gaussianBlurFragment.glsl");
@@ -49,7 +50,7 @@ namespace PbrGi {
         mTextureModel->addInstance(trans1);
     }
 
-    void GaussianBlurPass::render(std::shared_ptr<Texture> input, unsigned int size) {
+    void GaussianBlurPass::render(unsigned int size) {
         {
             mFramebufferX->setup();
 
@@ -60,7 +61,7 @@ namespace PbrGi {
             glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
             unsigned int textureId;
-            if (input->getTextureId(textureId)) {
+            if (mDepth->getTextureId(textureId)) {
                 mRenderProgram->setTexture2D("depthTexture", textureId);
             }
 

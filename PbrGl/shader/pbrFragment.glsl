@@ -30,6 +30,8 @@ uniform sampler2D emissionTexture;
 uniform float clearCoat;
 uniform float clearCoatRoughness;
 
+uniform sampler2D vsmDepthTexture;
+
 float F_Schlick(float f0, float f90, float VoH) {
     return f0 + (f90 - f0) * pow(1.0 - VoH, 5);
 }

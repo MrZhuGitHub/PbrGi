@@ -9,9 +9,9 @@
 namespace PbrGi {
     class GaussianBlurPass {
         public:
-            GaussianBlurPass();
+            GaussianBlurPass(std::shared_ptr<Texture> depth);
             ~GaussianBlurPass();
-            void render(std::shared_ptr<Texture> input, unsigned int size);
+            void render(unsigned int size);
             std::shared_ptr<Texture> result() {
                 return mGaussianBlurTextureY;
             }
@@ -23,6 +23,7 @@ namespace PbrGi {
             std::shared_ptr<Texture> mGaussianBlurTextureX;
             std::shared_ptr<Texture> mGaussianBlurTextureY;
             std::shared_ptr<model> mTextureModel;
+            std::shared_ptr<Texture> mDepth;
     };
 }
 

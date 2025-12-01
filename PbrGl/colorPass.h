@@ -1,0 +1,31 @@
+#ifndef _COLOR_PASS_H_
+#define _COLOR_PASS_H_
+
+#include "program.h"
+#include "framebuffer.h"
+#include "texture.h"
+#include "model.h"
+#include "camera.h"
+#include "common.hpp"
+#include "skybox.h"
+
+namespace PbrGi {
+    class ColorPass {
+        public:
+            ColorPass(std::shared_ptr<camera> camera, std::shared_ptr<SkyBox> skybox, std::shared_ptr<Texture> gaussianBlurDepthTexture);
+            void render(std::vector<std::shared_ptr<model>> models, bool skybox);
+            ~ColorPass();
+
+        private:
+            std::shared_ptr<frameBuffer> mFrameBuffer;
+            std::shared_ptr<Texture> mIblTexture;
+            std::shared_ptr<Texture> mDfgTexture;
+            std::shared_ptr<Program> mProgram;
+            std::shared_ptr<camera> mCamera;
+            std::vector<float> mSH;
+            std::shared_ptr<Texture> mGaussianBlurDepthTexture;
+            std::shared_ptr<SkyBox> mSkybox;
+    };
+}
+
+#endif

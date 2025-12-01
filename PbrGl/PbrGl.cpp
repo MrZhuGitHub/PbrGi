@@ -11,6 +11,10 @@
 #include <iostream>
 #include "common.hpp"
 
+#include "colorPass.h"
+#include "shadowPass.h"
+#include "gaussianBlurPass.h"
+
 float kReleaseMouseX = 0.0f, kReleaseMouseY = 0.0f;
 float kPushMouseX = 0.0f, kPushMouseY = 0.0f;
 bool kIfMouseRelease = true;
@@ -99,11 +103,17 @@ int main() {
         return -1;
     }
 
+    /**************opengl configure********************/
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+    //glEnable(GL_POLYGON_OFFSET_FILL);
+    //glPolygonOffset(1, 1);
+    //glEnable(GL_DEPTH_TEST);
+    GLint maxTextureUnits;
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
+    std::cout << "此设备支持的最大纹理单元数量为: " << maxTextureUnits << std::endl;
 
-    std::vector<std::string> textureNames = {"baseColorTexture", "sampler0_iblDFG", "sampler0_iblSpecular", "roughnessTexture", "normalTexture", "metalnessTexture", "emissionTexture"};
-    std::shared_ptr<PbrGi::Program> simpleShader = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\pbrVertex.glsl", ".\\shader\\pbrFragment.glsl");
-
+    /**************load model********************/
+    std::vector<std::shared_ptr<PbrGi::model>> models;
     //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\DamagedHelmet.glb");
     //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\sphere.glb");
     auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\su7.glb");
@@ -115,111 +125,31 @@ int main() {
         
     trans1 = glm::translate(glm::inverse(trans1), glm::vec3(-0.5 * (box[0] + box[1]), -0.5 * (box[2] + box[3]), -0.5 * (box[4] + box[5])));
     su7->addInstance(trans1);
+    models.push_back(su7);
 
+    /**************load camera********************/
     //kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(-400.0, 100.0, -400.0));
     kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f);
 
 
-    std::shared_ptr<PbrGi::frameBuffer> indirectLightFramebuffer = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, false, true, 8);
-    indirectLightFramebuffer->init();
+    /**************setup renderPass********************/
+    std::shared_ptr<PbrGi::SkyBox> iblSkyBox = std::make_shared<PbrGi::SkyBox>(SCR_WIDTH, SCR_HEIGHT, kCamera);
 
-    std::shared_ptr<PbrGi::Texture> ibl = std::make_shared<PbrGi::Texture>();
-    std::vector<std::string> prefilterIbl = {
-                ".\\asset\\environment\\lightroom\\lightroom_14b\\m0_px.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m0_nx.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m0_py.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m0_ny.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m0_pz.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m0_nz.hdr",
-                ".\\asset\\environment\\lightroom\\lightroom_14b\\m1_px.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m1_nx.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m1_py.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m1_ny.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m1_pz.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m1_nz.hdr",
-                ".\\asset\\environment\\lightroom\\lightroom_14b\\m2_px.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m2_nx.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m2_py.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m2_ny.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m2_pz.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m2_nz.hdr",
-                ".\\asset\\environment\\lightroom\\lightroom_14b\\m3_px.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m3_nx.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m3_py.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m3_ny.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m3_pz.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m3_nz.hdr",
-                ".\\asset\\environment\\lightroom\\lightroom_14b\\m4_px.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m4_nx.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m4_py.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m4_ny.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m4_pz.hdr",
-        ".\\asset\\environment\\lightroom\\lightroom_14b\\m4_nz.hdr",
-    };
-    unsigned int prefilterIblMimmap = 5;
-    ibl->TestInitCubeTextureHDR(prefilterIbl, prefilterIblMimmap);
+    std::shared_ptr<PbrGi::ShadowPass> kShadowPass = std::make_shared<PbrGi::ShadowPass>(glm::vec3(100, 100, 100));
 
-    std::shared_ptr<PbrGi::SkyBox> iblSkyBox = std::make_shared<PbrGi::SkyBox>(SCR_WIDTH, SCR_HEIGHT, kCamera, ibl);
+    std::shared_ptr<PbrGi::GaussianBlurPass> kGaussianBlurPass = std::make_shared<PbrGi::GaussianBlurPass>(kShadowPass->result());
 
-    std::shared_ptr<PbrGi::Texture> dfg = std::make_shared<PbrGi::Texture>();
-    dfg->init2DTextureHDR(".\\asset\\dfg\\dfg.hdr", true);
-
-    //glEnable(GL_POLYGON_OFFSET_FILL);
-    //glPolygonOffset(1, 1);
-    //glEnable(GL_DEPTH_TEST);
-
-    float sh[] = {
-         0.785786807537079,  0.785786807537079,  0.785786807537079,
-         0.402588516473770,  0.402588516473770,  0.402588516473770,
-         0.460519373416901,  0.460519373416901,  0.460519373416901,
-         0.084180898964405,  0.084180898964405,  0.084180898964405,
-         0.058341909199953,  0.058341909199953,  0.058341909199953,
-         0.204982891678810,  0.204982891678810,  0.204982891678810,
-         0.092737942934036,  0.092737942934036,  0.092737942934036,
-         -0.091809459030628, -0.091809459030628, -0.091809459030628,
-         -0.006748970132321, -0.006748970132321, -0.006748970132321
-    };
-
-    simpleShader->use();
-    unsigned int id;
-    ibl->getTextureId(id);
-    simpleShader->setTextureCube("sampler0_iblSpecular", id);
-
-    unsigned int id1;
-    dfg->getTextureId(id1);
-    simpleShader->setTexture2D("sampler0_iblDFG", id1);
-
-    simpleShader->setFloat("sampler0_iblSpecular_mipmapLevel", 4);
-
-    simpleShader->setVec3Float("iblSH", sh, 9);
-
-    GLint maxTextureUnits;
-    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
-    std::cout << "此设备支持的最大纹理单元数量为: " << maxTextureUnits << std::endl;
+    std::shared_ptr<PbrGi::ColorPass> kColorPass = std::make_shared<PbrGi::ColorPass>(kCamera, iblSkyBox, kGaussianBlurPass->result());
 
 
     while (!glfwWindowShouldClose(window))
     {
         // input
         processInput(window);
-
-        indirectLightFramebuffer->setup();
-
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        iblSkyBox->render();
-
-        simpleShader->use();
-        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-        simpleShader->setViewMatrix(kCamera->getViewMatrix());
-        simpleShader->setProjectionMatrix(kCamera->getProjectMatrix());
-        simpleShader->setProperty(kCamera->getCameraPosition(), "cameraPosition");
-
-        su7->drawModel(simpleShader);
-
-        indirectLightFramebuffer->unload();
-        indirectLightFramebuffer->blitToFrameBuffer(0);
+        kShadowPass->render(models);
+        kGaussianBlurPass->render(16);
+        kColorPass->render(models, true);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
