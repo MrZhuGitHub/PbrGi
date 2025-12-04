@@ -211,6 +211,7 @@ namespace PbrGi {
     }
 
     void model::drawModel(std::shared_ptr<Program> program) {
+        program->setBool("unLight", false);
         for (int i = 0; i < transforms_.size(); i++) {
             std::string name("objPosMatrix[");
             name.append(std::to_string(i));
@@ -530,7 +531,7 @@ namespace PbrGi {
     }
 
     void customModel::drawModel(std::shared_ptr<Program> program) {
-
+        program->setBool("unLight", true);
     }
 
     void customModel::addInstance(glm::mat4 posAndSizeMat4) {

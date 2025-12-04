@@ -84,7 +84,6 @@ namespace PbrGi {
     private:
         std::vector<std::shared_ptr<mesh>> meshes_;
         std::string directory_;
-        std::vector<glm::mat4> transforms_;
 
     protected:
         float mXmax;
@@ -93,11 +92,14 @@ namespace PbrGi {
         float mXmin;
         float mYmin;
         float mZmin;
+
+        std::vector<glm::mat4> transforms_;
     };
 
     class customModel : public model {
         public:
-            customModel(std::vector<float> geometryData);
+            //vec3 vPosition; vec3 vNormal; vec2 aTexCoord;
+            customModel(std::vector<float> geometryData, glm::vec3 color);
             virtual void drawModel(std::shared_ptr<Program> program) override;
             virtual void addInstance(glm::mat4 posAndSizeMat4) override;
             ~customModel();
@@ -106,6 +108,8 @@ namespace PbrGi {
             std::vector<float> mGeometryData;
             unsigned int mVAO;
             unsigned int mVBO;
+            glm::vec3 mColor;
+            
     };
 
 }

@@ -6,18 +6,20 @@ uniform float vsmExponent;
 uniform float near;
 uniform float far;
 
+in highp float depth;
+
 highp float LinearizeDepth(float depth)
 {
-    return (2.0 * near * far) / (far + near - depth * (far - near));
+    float ndc = depth * 2.0 - 1.0;
+    return (2.0 * near * far) / (far + near - ndc * (far - near));
 }
 
 void main()
 {
-    highp float depth = LinearizeDepth(gl_FragCoord.z);
-    depth = (depth - near)/(far - near);
-    depth = depth * 2.0 - 1.0;
+    highp float remapDepth = (depth - near)/(far - near);
+    remapDepth = remapDepth * 2.0 - 1.0;
 
-    depth = exp(vsmExponent * depth);
-    Out1_color.x = depth;
-    Out1_color.y = depth * depth;
+    remapDepth = exp(vsmExponent * remapDepth);
+    Out1_color.x = remapDepth;
+    Out1_color.y = remapDepth * remapDepth;
 }
