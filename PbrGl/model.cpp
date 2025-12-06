@@ -525,17 +525,63 @@ namespace PbrGi {
         return std::make_shared<PbrGi::mesh>(vertices, indices, ma);
     }
 
-    customModel::customModel(std::vector<float> geometryData)
-        : model(std::string()) {
+    customModel::customModel(std::vector<float> geometryData, glm::vec3 color)
+        : model(std::string())
+        , mColor(color) {
+
+        for (unsigned int i = 0; i < geometryData.size(); i = i + 3) {
+            vertex v;
+            v.position.x = geometryData[i];
+            v.position.y = geometryData[i + 1];
+            v.position.z = geometryData[i + 2];
+            vertices_.push_back(v);
+        }
+
+        glGenVertexArrays(1, &mVAO);
+        glGenBuffers(1, &mVBO);
+
+        glBindVertexArray(mVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+
+        glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(vertex), &vertices_[0], GL_STATIC_DRAW);
+
+        // vertex position
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
+        glEnableVertexAttribArray(0);
+        // vertex normal
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, normal));
+        glEnableVertexAttribArray(1);
+        // vectex texCoords 
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, texCoords));
+        glEnableVertexAttribArray(2);
+        //tangent
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)offsetof(vertex, tangent));
+        glEnableVertexAttribArray(3);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glBindVertexArray(0);
 
     }
 
     void customModel::drawModel(std::shared_ptr<Program> program) {
+        program->use();
+
         program->setBool("unLight", true);
-    }
+        program->setProperty(mColor, "unLightColor");
 
-    void customModel::addInstance(glm::mat4 posAndSizeMat4) {
+        for (int i = 0; i < transforms_.size(); i++) {
+            std::string name("objPosMatrix[");
+            name.append(std::to_string(i));
+            name.append("]");
+            program->setProperty(transforms_[i], name.c_str());
+        }
 
+        glBindVertexArray(mVAO);
+
+        glDrawArraysInstanced(GL_TRIANGLES, 0, vertices_.size(), transforms_.size());
+
+        glBindVertexArray(0);        
     }
 
     customModel::~customModel() {

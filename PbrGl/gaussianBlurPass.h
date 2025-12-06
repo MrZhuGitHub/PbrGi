@@ -11,10 +11,13 @@ namespace PbrGi {
         public:
             GaussianBlurPass(std::shared_ptr<Texture> depth);
             ~GaussianBlurPass();
-            void render(unsigned int size);
+            void render(float blurWidth);
             std::shared_ptr<Texture> result() {
                 return mGaussianBlurTextureY;
             }
+
+        private:
+            std::vector<glm::vec2> GaussianBlurKernel(float blurWidth);
 
         private:
             std::shared_ptr<Program> mRenderProgram;

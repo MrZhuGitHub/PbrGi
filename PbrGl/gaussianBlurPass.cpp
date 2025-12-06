@@ -50,7 +50,45 @@ namespace PbrGi {
         mTextureModel->addInstance(trans1);
     }
 
-    void GaussianBlurPass::render(unsigned int size) {
+    std::vector<glm::vec2> GaussianBlurPass::GaussianBlurKernel(float blurWidth) {
+        std::vector<glm::vec2> kernels;
+
+        const float sigma = (blurWidth + 1.0f) / 6.0f;
+        size_t kernelWidth = std::ceil((blurWidth - 5.0f) / 4.0f);
+        kernelWidth = kernelWidth * 4 + 5;
+
+        const float alpha = 1.0f / (2.0f * sigma * sigma);
+
+        glm::vec2 kernel0;
+        size_t m = (kernelWidth - 1) / 4 + 1;
+        m = m < 64 ? m : 64;
+        kernel0.x = 1.0;
+        kernel0.y = 0.0;
+        float totalWeight = kernel0.x;
+        kernels.push_back(kernel0);
+
+        for (size_t i = 1; i < m; i++) {
+            glm::vec2 kernel;
+            float const x0 = float(i * 2 - 1);
+            float const x1 = float(i * 2);
+            float const k0 = std::exp(-alpha * x0 * x0);
+            float const k1 = std::exp(-alpha * x1 * x1);
+
+            float const k = k0 + k1;
+            float const o = k1 / k;
+            kernel.x = k;
+            kernel.y = o;
+            totalWeight += (k0 + k1) * 2.0f;
+            kernels.push_back(kernel);
+        }
+        for (size_t i = 0; i < m; i++) {
+            kernels[i].x *= 1.0f / totalWeight;
+        }
+
+        return kernels;
+    }
+
+    void GaussianBlurPass::render(float blurWidth) {
         {
             mFramebufferX->setup();
 
@@ -60,6 +98,20 @@ namespace PbrGi {
             mRenderProgram->use();
             glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
+            std::vector<glm::vec2> kernels = GaussianBlurKernel(blurWidth);
+            mRenderProgram->setVec2Float("kernel", (float*)kernels.data(), kernels.size());
+            mRenderProgram->setInt("count", kernels.size());
+
+            glm::vec2 resolution;
+            resolution.x = (float)SCR_WIDTH;
+            resolution.y = (float)SCR_HEIGHT;
+            mRenderProgram->setProperty(resolution, "resolution");
+
+            glm::vec2 axis;
+            axis.x = 1.0f/(float)SCR_WIDTH;
+            axis.y = 0.0f;
+            mRenderProgram->setProperty(axis, "axis");
+            
             unsigned int textureId;
             if (mDepth->getTextureId(textureId)) {
                 mRenderProgram->setTexture2D("depthTexture", textureId);
@@ -78,6 +130,20 @@ namespace PbrGi {
 
             mRenderProgram->use();
             glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+
+            std::vector<glm::vec2> kernels = GaussianBlurKernel(blurWidth);
+            mRenderProgram->setVec2Float("kernel", (float*)kernels.data(), kernels.size());
+            mRenderProgram->setInt("count", kernels.size());
+
+            glm::vec2 resolution;
+            resolution.x = (float)SCR_WIDTH;
+            resolution.y = (float)SCR_HEIGHT;
+            mRenderProgram->setProperty(resolution, "resolution");
+
+            glm::vec2 axis;
+            axis.x = 0.0f;
+            axis.y = 1.0f/(float)SCR_HEIGHT;
+            mRenderProgram->setProperty(axis, "axis");
 
             unsigned int textureId;
             if (mGaussianBlurTextureX->getTextureId(textureId)) {

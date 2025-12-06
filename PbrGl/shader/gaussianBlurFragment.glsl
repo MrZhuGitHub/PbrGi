@@ -3,7 +3,7 @@ layout(location = 0) out vec4 Out0_color;
 layout(location = 1) out vec2 Out1_color;
 
 uniform vec2 axis;
-uniform vec2 kernel[32];
+uniform vec2 kernel[64];
 uniform sampler2D depthTexture;
 uniform vec2 resolution;
 uniform int count;

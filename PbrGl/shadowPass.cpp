@@ -2,8 +2,9 @@
 #include "common.hpp"
 
 namespace PbrGi {
-    ShadowPass::ShadowPass(glm::vec3 lightPosition) {
-        mLightPosition = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, lightPosition);
+    ShadowPass::ShadowPass(std::shared_ptr<camera> lightCamera)
+        : mLightPosition(lightCamera) {
+
         mRenderProgram = std::make_shared<PbrGi::Program>(std::vector<std::string>{}, ".\\shader\\shadowDepthVertex.glsl", ".\\shader\\shadowDepthFragment.glsl");
         mDepthTexture = std::make_shared<PbrGi::Texture>();
         mDepthTexture->init2DTexture(SCR_WIDTH, SCR_HEIGHT, GL_RGB16F, false);
@@ -32,6 +33,10 @@ namespace PbrGi {
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
         mRenderProgram->setViewMatrix(mLightPosition->getViewMatrix());
         mRenderProgram->setProjectionMatrix(mLightPosition->getProjectMatrix());
+
+        mRenderProgram->setFloat(mLightPosition->near(), "near");
+        mRenderProgram->setFloat(mLightPosition->far(), "far");
+        mRenderProgram->setFloat(5.54, "vsmExponent");
 
         for (auto& it : models) {
             it->drawModel(mRenderProgram);

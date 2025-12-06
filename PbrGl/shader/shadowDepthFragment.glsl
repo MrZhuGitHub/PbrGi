@@ -16,7 +16,7 @@ highp float LinearizeDepth(float depth)
 
 void main()
 {
-    highp float remapDepth = (depth - near)/(far - near);
+    highp float remapDepth = ((-depth) - near)/(far - near);
     remapDepth = remapDepth * 2.0 - 1.0;
 
     remapDepth = exp(vsmExponent * remapDepth);

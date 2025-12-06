@@ -127,20 +127,33 @@ int main() {
     su7->addInstance(trans1);
     models.push_back(su7);
 
+    std::vector<float> plane = {
+        -10000.0, 0.0, -10000.0,
+        -10000.0, 0.0, 10000.0,
+        10000.0, 0.0, 10000.0,
+        10000.0, 0.0, 10000.0,
+        10000.0, 0.0, -10000.0,
+        -10000.0, 0.0, -10000.0,
+    };
+    std::shared_ptr<PbrGi::model> shadowGround = std::make_shared<PbrGi::customModel>(plane, glm::vec3(1.0, 1.0, 1.0));
+    shadowGround->addInstance(glm::mat4(1.0));
+    models.push_back(shadowGround);
+
     /**************load camera********************/
     //kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(-400.0, 100.0, -400.0));
     kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f);
-
+    std::shared_ptr<PbrGi::camera> kLight = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(200.0f, 200.0f, 200.0f));
 
     /**************setup renderPass********************/
     std::shared_ptr<PbrGi::SkyBox> iblSkyBox = std::make_shared<PbrGi::SkyBox>(SCR_WIDTH, SCR_HEIGHT, kCamera);
 
-    std::shared_ptr<PbrGi::ShadowPass> kShadowPass = std::make_shared<PbrGi::ShadowPass>(glm::vec3(100, 100, 100));
+    std::shared_ptr<PbrGi::ShadowPass> kShadowPass = std::make_shared<PbrGi::ShadowPass>(kLight);
 
     std::shared_ptr<PbrGi::GaussianBlurPass> kGaussianBlurPass = std::make_shared<PbrGi::GaussianBlurPass>(kShadowPass->result());
 
-    std::shared_ptr<PbrGi::ColorPass> kColorPass = std::make_shared<PbrGi::ColorPass>(kCamera, iblSkyBox, kGaussianBlurPass->result());
+    std::shared_ptr<PbrGi::ColorPass> kColorPass = std::make_shared<PbrGi::ColorPass>(kCamera, iblSkyBox, kGaussianBlurPass->result(), kLight);
 
+    float blurWidth = 16.0f;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -148,8 +161,8 @@ int main() {
         processInput(window);
         
         kShadowPass->render(models);
-        kGaussianBlurPass->render(16);
-        kColorPass->render(models, true);
+        kGaussianBlurPass->render(blurWidth);
+        kColorPass->render(models, false);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

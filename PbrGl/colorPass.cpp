@@ -1,10 +1,11 @@
 #include "colorPass.h"
 
 namespace PbrGi {
-    ColorPass::ColorPass(std::shared_ptr<camera> camera, std::shared_ptr<SkyBox> skybox, std::shared_ptr<Texture> gaussianBlurDepthTexture)
-        : mCamera (camera)
+    ColorPass::ColorPass(std::shared_ptr<camera> camera1, std::shared_ptr<SkyBox> skybox, std::shared_ptr<Texture> gaussianBlurDepthTexture, std::shared_ptr<camera> lightCamera)
+        : mCamera (camera1)
         , mSkybox(skybox)
-        , mGaussianBlurDepthTexture(gaussianBlurDepthTexture) {
+        , mGaussianBlurDepthTexture(gaussianBlurDepthTexture)
+        , mLightCamera(lightCamera) {
 
         mSH = mSkybox->getSH();
         mIblTexture = mSkybox->getIBL();
@@ -55,6 +56,28 @@ namespace PbrGi {
         mProgram->setViewMatrix(mCamera->getViewMatrix());
         mProgram->setProjectionMatrix(mCamera->getProjectMatrix());
         mProgram->setProperty(mCamera->getCameraPosition(), "cameraPosition");
+
+        if (mGaussianBlurDepthTexture && mLightCamera) { 
+            mProgram->setBool("shadowMapExist", true);
+            unsigned int shadowMapTexture;
+            if (mGaussianBlurDepthTexture->getTextureId(shadowMapTexture)) {
+                mProgram->setTexture2D("shadowMapTexture", shadowMapTexture);
+            } else {
+                mProgram->setBool("shadowMapExist", false);
+            }
+
+            mProgram->setProperty(mLightCamera->getViewMatrix(), "lightCameraViewMatrix");
+            mProgram->setProperty(mLightCamera->getProjectMatrix(), "lightCameraProjectionMatrix");
+            mProgram->setFloat(mLightCamera->near(), "near");
+            mProgram->setFloat(mLightCamera->far(), "far");
+            mProgram->setFloat(5.54, "vsmExponent");
+
+            mProgram->setFloat(0.0277, "vsmDepthScale");
+            mProgram->setFloat(0.15, "vsmLightBleedReduction");
+
+        } else {
+            mProgram->setBool("shadowMapExist", false);
+        }
 
         for (auto& model : models) {
             model->drawModel(mProgram);

@@ -53,7 +53,9 @@ namespace PbrGi {
 
         void setVecFloat(std::string name, float* data, unsigned int count);
 
-         void setVec3Float(std::string name, float* data, unsigned int count);
+        void setVec3Float(std::string name, float* data, unsigned int count);
+
+        void setVec2Float(std::string name, float* data, unsigned int count);
 
     private:
         unsigned int ID;

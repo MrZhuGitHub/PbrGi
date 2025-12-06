@@ -101,15 +101,13 @@ namespace PbrGi {
             //vec3 vPosition; vec3 vNormal; vec2 aTexCoord;
             customModel(std::vector<float> geometryData, glm::vec3 color);
             virtual void drawModel(std::shared_ptr<Program> program) override;
-            virtual void addInstance(glm::mat4 posAndSizeMat4) override;
             ~customModel();
 
         private:
-            std::vector<float> mGeometryData;
+            std::vector<vertex> vertices_;
             unsigned int mVAO;
             unsigned int mVBO;
             glm::vec3 mColor;
-            
     };
 
 }

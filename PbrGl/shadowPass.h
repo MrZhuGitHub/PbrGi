@@ -10,7 +10,7 @@
 namespace PbrGi {
     class ShadowPass {
         public:
-            ShadowPass(glm::vec3 lightPosition);
+            ShadowPass(std::shared_ptr<camera> lightCamera);
             ~ShadowPass();
             void render(std::vector<std::shared_ptr<model>> models);
             std::shared_ptr<Texture> result() {

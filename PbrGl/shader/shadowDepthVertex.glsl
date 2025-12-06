@@ -9,6 +9,6 @@ out highp float depth;
 
 void main()
 {
-	depth = - viewMatrix * objPosMatrix[gl_InstanceID] * vec4(vPosition, 1.0).z;
+	depth = viewMatrix * objPosMatrix[gl_InstanceID] * vec4(vPosition, 1.0).z;
 	gl_Position = projectionMatrix * viewMatrix * objPosMatrix[gl_InstanceID] * vec4(vPosition, 1.0);
 }
