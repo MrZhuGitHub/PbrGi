@@ -45,6 +45,15 @@
     <ClCompile Include="skybox.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="shadowPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="colorPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="gaussianBlurPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -68,6 +77,15 @@
     <ClInclude Include="skybox.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="shadowPass.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="colorPass.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="gaussianBlurPass.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="asset\su7.glb">
@@ -89,6 +107,24 @@
       <Filter>源文件\shader</Filter>
     </None>
     <None Include="shader\skyboxVertex.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\gaussianBlurFragment.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\gaussianBlurVertex.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\shadowDepthFragment.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\shadowDepthVertex.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\unLightFragment.glsl">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\unLightVertex.glsl">
       <Filter>源文件\shader</Filter>
     </None>
   </ItemGroup>

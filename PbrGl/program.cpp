@@ -2,6 +2,8 @@
 
 #include "glm/gtc/type_ptr.hpp"
 
+#include <windows.h>
+
 namespace PbrGi {
 
     Program::Program(std::vector<std::string> textureNames,  const char* vertexPath, const char* fragmentPath, const char* geometryPath) {
@@ -111,6 +113,8 @@ namespace PbrGi {
             GLint location = glGetUniformLocation(ID, textureNames[index].c_str());
             glUniform1i(location, index);
             mTextures.insert(std::make_pair(textureNames[index], index));
+
+            std::cout << textureNames[index] << "," << index << std::endl;
         }
     }
 
@@ -118,15 +122,15 @@ namespace PbrGi {
         glUseProgram(ID);
     }
 
-    void Program::setBool(const std::string& name, bool value) const {
+    void Program::setBool(const std::string& name, bool value) {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
     }
 
-    void Program::setInt(const std::string& name, int value) const {
+    void Program::setInt(const std::string& name, int value) {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
     }
 
-    void Program::setFloat(const std::string& name, float value) const {
+    void Program::setFloat(const std::string& name, float value) {
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
 
@@ -193,9 +197,14 @@ namespace PbrGi {
             GLint location = glGetUniformLocation(ID, name.c_str());
             glUniform1i(location, mTextures.at(name));
         }
-        else {
-            std::cout << name << std::endl;
-        }
+        // else {
+        //     std::cout << "setTexture2D() not find texture : " << name << std::endl;
+        //     for (auto& it : mTextures) {
+        //         std::cout << it.first << std::endl;
+        //     }
+        //     __debugbreak();
+        //     exit(0);
+        // }
     }
 
     void Program::setTexture3D(std::string name, unsigned int textureId) {
@@ -214,9 +223,9 @@ namespace PbrGi {
             GLint location = glGetUniformLocation(ID, name.c_str());
             glUniform1i(location, mTextures.at(name));
         }
-        else {
-            std::cout << name << std::endl;
-        }
+        // else {
+        //     std::cout << "setTextureCube() not find texture:" << name << std::endl;
+        // }
     }
 
     void Program::setTexture2D(unsigned int binding, unsigned int textureId) {

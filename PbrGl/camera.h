@@ -30,17 +30,11 @@ namespace PbrGi {
 
         glm::vec3 getCameraPosition();
 
-        glm::vec3 getCameraDirection() {
-            return glm::normalize(cameraDirection_);
-        }
+        glm::vec3 getCameraDirection();
 
-        float near() {
-            return near_;
-        }
+        float near();
 
-        float far() {
-            return far_;
-        }
+        float far();
 
     private:
         glm::vec3 cameraPos_;

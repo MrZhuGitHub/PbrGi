@@ -9,7 +9,7 @@ uniform vec2 resolution;
 uniform int count;
 
 void tap(inout highp vec4 sum, const float weight, const highp vec2 position) {
-    highp vec4 s = textureLod(depthTexture, position);
+    highp vec4 s = texture(depthTexture, position);
     sum += s * weight;
 }
 

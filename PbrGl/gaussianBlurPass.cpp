@@ -1,10 +1,16 @@
 #include "gaussianBlurPass.h"
 #include "common.hpp"
 
+
+#include "program.h"
+#include "framebuffer.h"
+#include "texture.h"
+#include "model.h"
+
 namespace PbrGi {
     GaussianBlurPass::GaussianBlurPass(std::shared_ptr<Texture> depth)
         : mDepth(depth) {
-
+        
         std::vector<std::string> textureNames = {"depthTexture"};
         mRenderProgram = std::make_shared<Program>(textureNames,  ".\\shader\\gaussianBlurVertex.glsl", ".\\shader\\gaussianBlurFragment.glsl");
 
@@ -45,19 +51,20 @@ namespace PbrGi {
             0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
         };
         
-        mTextureModel = std::make_shared<customModel>(geometryData);
+        mTextureModel = std::make_shared<customModel>(geometryData, glm::vec3(1.0, 1.0, 1.0), 5);
         glm::mat4 trans1(1.0f);
         mTextureModel->addInstance(trans1);
+
     }
 
     std::vector<glm::vec2> GaussianBlurPass::GaussianBlurKernel(float blurWidth) {
         std::vector<glm::vec2> kernels;
 
-        const float sigma = (blurWidth + 1.0f) / 6.0f;
+        float sigma = (blurWidth + 1.0f) / 6.0f;
         size_t kernelWidth = std::ceil((blurWidth - 5.0f) / 4.0f);
         kernelWidth = kernelWidth * 4 + 5;
 
-        const float alpha = 1.0f / (2.0f * sigma * sigma);
+        float alpha = 1.0f / (2.0f * sigma * sigma);
 
         glm::vec2 kernel0;
         size_t m = (kernelWidth - 1) / 4 + 1;
@@ -69,13 +76,13 @@ namespace PbrGi {
 
         for (size_t i = 1; i < m; i++) {
             glm::vec2 kernel;
-            float const x0 = float(i * 2 - 1);
-            float const x1 = float(i * 2);
-            float const k0 = std::exp(-alpha * x0 * x0);
-            float const k1 = std::exp(-alpha * x1 * x1);
+            float x0 = float(i * 2 - 1);
+            float x1 = float(i * 2);
+            float k0 = std::exp(-alpha * x0 * x0);
+            float k1 = std::exp(-alpha * x1 * x1);
 
-            float const k = k0 + k1;
-            float const o = k1 / k;
+            float k = k0 + k1;
+            float o = k1 / k;
             kernel.x = k;
             kernel.y = o;
             totalWeight += (k0 + k1) * 2.0f;
@@ -89,8 +96,12 @@ namespace PbrGi {
     }
 
     void GaussianBlurPass::render(float blurWidth) {
+
         {
             mFramebufferX->setup();
+
+            GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+            glDrawBuffers(2, buffers);
 
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -125,6 +136,9 @@ namespace PbrGi {
         {
             mFramebufferY->setup();
 
+            GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+            glDrawBuffers(2, buffers);
+
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -155,6 +169,10 @@ namespace PbrGi {
             mFramebufferY->unload();
         }
 
+    }
+
+    std::shared_ptr<Texture> GaussianBlurPass::result() {
+        return mGaussianBlurTextureY;
     }
 
     GaussianBlurPass::~GaussianBlurPass() {

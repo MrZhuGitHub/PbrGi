@@ -98,8 +98,8 @@ namespace PbrGi {
 
     class customModel : public model {
         public:
-            //vec3 vPosition; vec3 vNormal; vec2 aTexCoord;
-            customModel(std::vector<float> geometryData, glm::vec3 color);
+            //vec3 vPosition; vec2 aTexCoord; vec3 vNormal;
+            customModel(std::vector<float> geometryData, glm::vec3 color, unsigned int stride);
             virtual void drawModel(std::shared_ptr<Program> program) override;
             ~customModel();
 

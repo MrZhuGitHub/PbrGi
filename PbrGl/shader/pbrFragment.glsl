@@ -120,7 +120,7 @@ void main()
 
 			highp vec4 p2 = lightCameraProjectionMatrix * p1;
 			p1 = 0.5*(1.0 + p1/p1.w);
-			highp vec2 moments = texture(shadowMapTexture, p1.xy);
+			highp vec2 moments = texture(shadowMapTexture, p1.xy).xy;
 
 			visibility = evaluateShadowVSM(moments.xy, depth);
 		}

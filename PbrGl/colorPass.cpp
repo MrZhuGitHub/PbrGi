@@ -1,5 +1,13 @@
 #include "colorPass.h"
 
+#include "program.h"
+#include "framebuffer.h"
+#include "texture.h"
+#include "model.h"
+#include "camera.h"
+#include "common.hpp"
+#include "skybox.h"
+
 namespace PbrGi {
     ColorPass::ColorPass(std::shared_ptr<camera> camera1, std::shared_ptr<SkyBox> skybox, std::shared_ptr<Texture> gaussianBlurDepthTexture, std::shared_ptr<camera> lightCamera)
         : mCamera (camera1)
@@ -22,7 +30,11 @@ namespace PbrGi {
         mProgram = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\pbrVertex.glsl", ".\\shader\\pbrFragment.glsl");
 
         mFrameBuffer = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, false, true, 8);
-        mFrameBuffer->init();
+        if (mFrameBuffer->init()) {
+            std::cout << "colorPass framebuffer init success" << std::endl;
+        } else {
+            std::cout << "colorPass framebuffer init failed" << std::endl;
+        }
 
         mDfgTexture = std::make_shared<PbrGi::Texture>();
         mDfgTexture->init2DTextureHDR(".\\asset\\dfg\\dfg.hdr", true);
@@ -57,6 +69,7 @@ namespace PbrGi {
         mProgram->setProjectionMatrix(mCamera->getProjectMatrix());
         mProgram->setProperty(mCamera->getCameraPosition(), "cameraPosition");
 
+
         if (mGaussianBlurDepthTexture && mLightCamera) { 
             mProgram->setBool("shadowMapExist", true);
             unsigned int shadowMapTexture;
@@ -70,10 +83,14 @@ namespace PbrGi {
             mProgram->setProperty(mLightCamera->getProjectMatrix(), "lightCameraProjectionMatrix");
             mProgram->setFloat(mLightCamera->near(), "near");
             mProgram->setFloat(mLightCamera->far(), "far");
-            mProgram->setFloat(5.54, "vsmExponent");
+            float vsmExponent = 5.54f;
+            mProgram->setFloat(vsmExponent, "vsmExponent");
 
-            mProgram->setFloat(0.0277, "vsmDepthScale");
-            mProgram->setFloat(0.15, "vsmLightBleedReduction");
+            float vsmDepthScale = 0.0277f;
+            mProgram->setFloat(vsmDepthScale, "vsmDepthScale");
+
+            float vsmLightBleedReduction = 0.15;
+            mProgram->setFloat(vsmLightBleedReduction, "vsmLightBleedReduction");
 
         } else {
             mProgram->setBool("shadowMapExist", false);

@@ -1,20 +1,24 @@
 #ifndef _GAUSSIAN_BLUR_Pass_H_
 #define _GAUSSIAN_BLUR_Pass_H_
 
-#include "program.h"
-#include "framebuffer.h"
-#include "texture.h"
-#include "model.h"
+#include <memory>
+#include <vector>
+#include <glm/glm.hpp>
 
 namespace PbrGi {
+
+    class Program;
+    class Texture;
+    class frameBuffer;
+    class model;
+    class customModel;
+
     class GaussianBlurPass {
         public:
             GaussianBlurPass(std::shared_ptr<Texture> depth);
             ~GaussianBlurPass();
             void render(float blurWidth);
-            std::shared_ptr<Texture> result() {
-                return mGaussianBlurTextureY;
-            }
+            std::shared_ptr<Texture> result();
 
         private:
             std::vector<glm::vec2> GaussianBlurKernel(float blurWidth);

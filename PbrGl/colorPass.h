@@ -1,15 +1,18 @@
 #ifndef _COLOR_PASS_H_
 #define _COLOR_PASS_H_
 
-#include "program.h"
-#include "framebuffer.h"
-#include "texture.h"
-#include "model.h"
-#include "camera.h"
-#include "common.hpp"
-#include "skybox.h"
+#include <memory>
+#include <vector>
+#include <glm/glm.hpp>
 
 namespace PbrGi {
+    class frameBuffer;
+    class Texture;
+    class camera;
+    class model;
+    class SkyBox;
+    class customModel;
+    class Program;
     class ColorPass {
         public:
             ColorPass(std::shared_ptr<camera> camera1, std::shared_ptr<SkyBox> skybox, std::shared_ptr<Texture> gaussianBlurDepthTexture = nullptr, std::shared_ptr<camera> lightCamera = nullptr);

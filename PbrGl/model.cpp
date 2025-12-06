@@ -525,15 +525,22 @@ namespace PbrGi {
         return std::make_shared<PbrGi::mesh>(vertices, indices, ma);
     }
 
-    customModel::customModel(std::vector<float> geometryData, glm::vec3 color)
+    customModel::customModel(std::vector<float> geometryData, glm::vec3 color, unsigned int stride)
         : model(std::string())
         , mColor(color) {
 
-        for (unsigned int i = 0; i < geometryData.size(); i = i + 3) {
+        for (unsigned int i = 0; i < geometryData.size(); i = i + stride) {
             vertex v;
-            v.position.x = geometryData[i];
-            v.position.y = geometryData[i + 1];
-            v.position.z = geometryData[i + 2];
+            if (stride >= 3) {
+                v.position.x = geometryData[i];
+                v.position.y = geometryData[i + 1];
+                v.position.z = geometryData[i + 2];
+            }
+
+            if (stride >= 5) {
+                v.texCoords.x = geometryData[i + 3];
+                v.texCoords.y = geometryData[i + 4];
+            }
             vertices_.push_back(v);
         }
 
@@ -581,7 +588,8 @@ namespace PbrGi {
 
         glDrawArraysInstanced(GL_TRIANGLES, 0, vertices_.size(), transforms_.size());
 
-        glBindVertexArray(0);        
+        glBindVertexArray(0);    
+    
     }
 
     customModel::~customModel() {

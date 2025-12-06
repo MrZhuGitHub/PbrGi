@@ -121,6 +121,7 @@ int main() {
 
     std::vector<float> box = su7->get3DBox();
     glm::mat4 trans1(1.0f);
+    trans1 = glm::translate(trans1, glm::vec3(0.0f, 0.0f, 0.5 * abs(box[5] - box[4])));
     trans1 = glm::rotate(trans1, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         
     trans1 = glm::translate(glm::inverse(trans1), glm::vec3(-0.5 * (box[0] + box[1]), -0.5 * (box[2] + box[3]), -0.5 * (box[4] + box[5])));
@@ -135,14 +136,14 @@ int main() {
         10000.0, 0.0, -10000.0,
         -10000.0, 0.0, -10000.0,
     };
-    std::shared_ptr<PbrGi::model> shadowGround = std::make_shared<PbrGi::customModel>(plane, glm::vec3(1.0, 1.0, 1.0));
+    std::shared_ptr<PbrGi::model> shadowGround = std::make_shared<PbrGi::customModel>(plane, glm::vec3(1.0, 1.0, 1.0), 3);
     shadowGround->addInstance(glm::mat4(1.0));
     models.push_back(shadowGround);
 
     /**************load camera********************/
     //kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(-400.0, 100.0, -400.0));
     kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f);
-    std::shared_ptr<PbrGi::camera> kLight = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(200.0f, 200.0f, 200.0f));
+    std::shared_ptr<PbrGi::camera> kLight = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(1000.0f, 1000.0f, 1000.0f));
 
     /**************setup renderPass********************/
     std::shared_ptr<PbrGi::SkyBox> iblSkyBox = std::make_shared<PbrGi::SkyBox>(SCR_WIDTH, SCR_HEIGHT, kCamera);

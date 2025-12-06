@@ -26,6 +26,9 @@ namespace PbrGi {
     void ShadowPass::render(std::vector<std::shared_ptr<model>> models) {
         mFramebuffer->setup();
 
+        GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+        glDrawBuffers(2, buffers);
+
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -36,7 +39,8 @@ namespace PbrGi {
 
         mRenderProgram->setFloat(mLightPosition->near(), "near");
         mRenderProgram->setFloat(mLightPosition->far(), "far");
-        mRenderProgram->setFloat(5.54, "vsmExponent");
+        float vsmExponent = 5.54f;
+        mRenderProgram->setFloat(vsmExponent, "vsmExponent");
 
         for (auto& it : models) {
             it->drawModel(mRenderProgram);
