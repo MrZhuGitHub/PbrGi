@@ -107,6 +107,11 @@ float linear_to_srgb(float c) {
     return c;
 }
 
+bool isTexCoordValid(vec2 texCoord) {
+    return all(greaterThanEqual(texCoord, vec2(0.0))) && 
+           all(lessThanEqual(texCoord, vec2(0.99)));
+}
+
 void main()
 {
 	if (unLight) {
@@ -114,15 +119,19 @@ void main()
 		if (shadowMapExist) {
 			highp vec4 p1 = lightCameraViewMatrix * vec4(position, 1.0);
 			highp float depth = (-p1.z - near)/(far - near);
-			depth = depth * 2.0 - 1.0;
-			depth = vsmExponent * depth;
-			depth = exp(depth);
+			if (depth <= 1.0 && depth >= 0) {
+				depth = depth * 2.0 - 1.0;
+				depth = vsmExponent * depth;
+				depth = exp(depth);
 
-			highp vec4 p2 = lightCameraProjectionMatrix * p1;
-			p2 = 0.5*(1.0 + p2/p2.w);
-			highp vec2 moments = texture(shadowMapTexture, p2.xy).xy;
+				highp vec4 p2 = lightCameraProjectionMatrix * p1;
+				p2 = 0.5*(1.0 + p2/p2.w);
+				highp vec2 moments = texture(shadowMapTexture, p2.xy).xy;
 
-			visibility = evaluateShadowVSM(moments.xy, depth);
+				if (isTexCoordValid(p2.xy)) {
+					visibility = evaluateShadowVSM(moments.xy, depth);
+				}
+			}
 		}
 		
 		Out0_color = vec4(unLightColor * (0.7 + visibility * 0.3), 1.0);

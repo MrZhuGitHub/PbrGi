@@ -183,8 +183,6 @@ namespace PbrGi {
             program->setFloat("clearCoatRoughness", 0.0);
         }
 
-        program->setBool("unLight", false);
-
         glBindVertexArray(VAO_);
 
         glDrawElementsInstanced(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0, size);
@@ -590,6 +588,8 @@ namespace PbrGi {
         glDrawArraysInstanced(GL_TRIANGLES, 0, vertices_.size(), transforms_.size());
 
         glBindVertexArray(0);  
+
+        program->setBool("unLight", false);
     
     }
 
