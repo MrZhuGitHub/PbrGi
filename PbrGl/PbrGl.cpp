@@ -143,7 +143,7 @@ int main() {
     /**************load camera********************/
     //kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(-400.0, 100.0, -400.0));
     kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f);
-    std::shared_ptr<PbrGi::camera> kLight = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(1000.0f, 1000.0f, 1000.0f));
+    std::shared_ptr<PbrGi::camera> kLight = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(1000.0f, 1000.0f, -1000.0f));
 
     /**************setup renderPass********************/
     std::shared_ptr<PbrGi::SkyBox> iblSkyBox = std::make_shared<PbrGi::SkyBox>(SCR_WIDTH, SCR_HEIGHT, kCamera);
@@ -154,7 +154,7 @@ int main() {
 
     std::shared_ptr<PbrGi::ColorPass> kColorPass = std::make_shared<PbrGi::ColorPass>(kCamera, iblSkyBox, kGaussianBlurPass->result(), kLight);
 
-    float blurWidth = 50.0f;
+    float blurWidth = 20.0f;
 
     while (!glfwWindowShouldClose(window))
     {
