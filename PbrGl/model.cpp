@@ -589,6 +589,8 @@ namespace PbrGi {
 
         glBindVertexArray(0);  
 
+        //fix renderDoc bug, which can't be captured in function model::drawModel().
+        //todo : unLight and PBR use different shader program.
         program->setBool("unLight", false);
     
     }
