@@ -30,7 +30,7 @@ uniform sampler2D emissionTexture;
 uniform float clearCoat;
 uniform float clearCoatRoughness;
 
-bool shadowMapExist;
+uniform bool shadowMapExist;
 uniform sampler2D shadowMapTexture;
 uniform mat4 lightCameraViewMatrix;
 uniform mat4 lightCameraProjectionMatrix;
@@ -119,12 +119,13 @@ void main()
 			depth = exp(depth);
 
 			highp vec4 p2 = lightCameraProjectionMatrix * p1;
-			p1 = 0.5*(1.0 + p1/p1.w);
-			highp vec2 moments = texture(shadowMapTexture, p1.xy).xy;
+			p2 = 0.5*(1.0 + p2/p2.w);
+			highp vec2 moments = texture(shadowMapTexture, p2.xy).xy;
 
 			visibility = evaluateShadowVSM(moments.xy, depth);
 		}
-		Out0_color = vec4(unLightColor * visibility, 1.0);
+		
+		Out0_color = vec4(unLightColor * (0.7 + visibility * 0.3), 1.0);
 	} else {
 		float iblLuminance = 1.0;
 

@@ -25,7 +25,7 @@ namespace PbrGi {
                                                 "normalTexture", 
                                                 "metalnessTexture", 
                                                 "emissionTexture",
-                                                "vsmDepthTexture"};
+                                                "shadowMapTexture"};
 
         mProgram = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\pbrVertex.glsl", ".\\shader\\pbrFragment.glsl");
 
@@ -99,7 +99,7 @@ namespace PbrGi {
         for (auto& model : models) {
             model->drawModel(mProgram);
         }
-
+        
         mFrameBuffer->unload();
         mFrameBuffer->blitToFrameBuffer(0);
     }

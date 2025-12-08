@@ -154,7 +154,7 @@ int main() {
 
     std::shared_ptr<PbrGi::ColorPass> kColorPass = std::make_shared<PbrGi::ColorPass>(kCamera, iblSkyBox, kGaussianBlurPass->result(), kLight);
 
-    float blurWidth = 16.0f;
+    float blurWidth = 50.0f;
 
     while (!glfwWindowShouldClose(window))
     {

@@ -108,7 +108,7 @@ namespace PbrGi {
             unsigned int mVAO;
             unsigned int mVBO;
             glm::vec3 mColor;
-    };
+                };
 
 }
 
