@@ -5,7 +5,7 @@ namespace PbrGi {
     ShadowPass::ShadowPass(std::shared_ptr<camera> lightCamera)
         : mLightPosition(lightCamera) {
 
-        mRenderProgram = std::make_shared<PbrGi::Program>(std::vector<std::string>{}, ".\\shader\\shadowDepthVertex.glsl", ".\\shader\\shadowDepthFragment.glsl");
+        mRenderProgram = std::make_shared<PbrGi::Program>(std::vector<std::string>{}, ".\\shader\\shadowDepth.vs", ".\\shader\\shadowDepth.fs");
         mDepthTexture = std::make_shared<PbrGi::Texture>();
         mDepthTexture->init2DTexture(SCR_WIDTH, SCR_HEIGHT, GL_RGB16F, false);
         mFramebuffer = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, true);

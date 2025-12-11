@@ -12,7 +12,7 @@ namespace PbrGi {
         : mDepth(depth) {
         
         std::vector<std::string> textureNames = {"depthTexture"};
-        mRenderProgram = std::make_shared<Program>(textureNames,  ".\\shader\\gaussianBlurVertex.glsl", ".\\shader\\gaussianBlurFragment.glsl");
+        mRenderProgram = std::make_shared<Program>(textureNames,  ".\\shader\\gaussianBlur.vs", ".\\shader\\gaussianBlur.fs");
 
         {
             mGaussianBlurTextureX = std::make_shared<PbrGi::Texture>();

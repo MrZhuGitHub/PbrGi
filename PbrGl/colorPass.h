@@ -15,7 +15,10 @@ namespace PbrGi {
     class Program;
     class ColorPass {
         public:
-            ColorPass(std::shared_ptr<camera> camera1, std::shared_ptr<SkyBox> skybox, std::shared_ptr<Texture> gaussianBlurDepthTexture = nullptr, std::shared_ptr<camera> lightCamera = nullptr);
+            ColorPass(std::shared_ptr<camera> camera1, std::shared_ptr<SkyBox> skybox, 
+                        std::shared_ptr<Texture> bilateralBlurAoTexture = nullptr,
+                        std::shared_ptr<Texture> gaussianBlurDepthTexture = nullptr, 
+                        std::shared_ptr<camera> lightCamera = nullptr);
             void render(std::vector<std::shared_ptr<model>> models, bool skybox);
             ~ColorPass();
 
@@ -29,6 +32,7 @@ namespace PbrGi {
             std::shared_ptr<Texture> mGaussianBlurDepthTexture;
             std::shared_ptr<SkyBox> mSkybox;
             std::shared_ptr<camera> mLightCamera;
+            std::shared_ptr<Texture> mBilateralBlurAoTexture;
     };
 }
 

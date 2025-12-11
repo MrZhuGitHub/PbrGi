@@ -14,6 +14,8 @@
 #include "colorPass.h"
 #include "shadowPass.h"
 #include "gaussianBlurPass.h"
+#include "bilateralBlurPass.h"
+#include "gtaoPass.h"
 
 float kReleaseMouseX = 0.0f, kReleaseMouseY = 0.0f;
 float kPushMouseX = 0.0f, kPushMouseY = 0.0f;
@@ -152,7 +154,11 @@ int main() {
 
     std::shared_ptr<PbrGi::GaussianBlurPass> kGaussianBlurPass = std::make_shared<PbrGi::GaussianBlurPass>(kShadowPass->result());
 
-    std::shared_ptr<PbrGi::ColorPass> kColorPass = std::make_shared<PbrGi::ColorPass>(kCamera, iblSkyBox, kGaussianBlurPass->result(), kLight);
+    std::shared_ptr<PbrGi::GtaoPass> kGtaoPass = std::make_shared<PbrGi::GtaoPass>(kShadowPass->result());
+
+    std::shared_ptr<PbrGi::BilateralBlurPass> kBilateralBlurPass = std::make_shared<PbrGi::BilateralBlurPass>(kGtaoPass->result());
+
+    std::shared_ptr<PbrGi::ColorPass> kColorPass = std::make_shared<PbrGi::ColorPass>(kCamera, iblSkyBox, kBilateralBlurPass->result(), kGaussianBlurPass->result(), kLight);
 
     float blurWidth = 20.0f;
 
@@ -163,6 +169,8 @@ int main() {
         
         kShadowPass->render(models);
         kGaussianBlurPass->render(blurWidth);
+        kGtaoPass->render();
+        kBilateralBlurPass->render();
         kColorPass->render(models, false);
 
         glfwSwapBuffers(window);

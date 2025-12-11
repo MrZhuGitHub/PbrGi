@@ -62,7 +62,7 @@ namespace PbrGi {
         std::copy(sh, sh + 27, mSH.begin());
 
         std::vector<std::string> textureNames = { "skybox" };
-        mProgram = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\skyboxVertex.glsl", ".\\shader\\skyboxFragment.glsl");
+        mProgram = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\skybox.vs", ".\\shader\\skybox.fs");
                                                        
         float cube[] = {
             // back face

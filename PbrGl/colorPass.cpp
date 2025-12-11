@@ -9,11 +9,15 @@
 #include "skybox.h"
 
 namespace PbrGi {
-    ColorPass::ColorPass(std::shared_ptr<camera> camera1, std::shared_ptr<SkyBox> skybox, std::shared_ptr<Texture> gaussianBlurDepthTexture, std::shared_ptr<camera> lightCamera)
+    ColorPass::ColorPass(std::shared_ptr<camera> camera1, std::shared_ptr<SkyBox> skybox,
+                        std::shared_ptr<Texture> bilateralBlurAoTexture,
+                        std::shared_ptr<Texture> gaussianBlurDepthTexture,
+                        std::shared_ptr<camera> lightCamera)
         : mCamera (camera1)
         , mSkybox(skybox)
         , mGaussianBlurDepthTexture(gaussianBlurDepthTexture)
-        , mLightCamera(lightCamera) {
+        , mLightCamera(lightCamera)
+        , mBilateralBlurAoTexture(bilateralBlurAoTexture) {
 
         mSH = mSkybox->getSH();
         mIblTexture = mSkybox->getIBL();
@@ -27,7 +31,7 @@ namespace PbrGi {
                                                 "emissionTexture",
                                                 "shadowMapTexture"};
 
-        mProgram = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\pbrVertex.glsl", ".\\shader\\pbrFragment.glsl");
+        mProgram = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\pbr.vs", ".\\shader\\pbr.fs");
 
         mFrameBuffer = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, false, true, 8);
         if (mFrameBuffer->init()) {
