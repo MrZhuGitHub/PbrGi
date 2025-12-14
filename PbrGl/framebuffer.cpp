@@ -93,7 +93,8 @@ namespace PbrGi {
 
                 glGenTextures(1, &textureId_);
                 glBindTexture(GL_TEXTURE_2D, textureId_);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width_, height_, 0, GL_RGBA, GL_FLOAT, NULL);
+                //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width_, height_, 0, GL_RGBA, GL_FLOAT, NULL);
+                glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width_, height_);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 glBindTexture(GL_TEXTURE_2D, 0);

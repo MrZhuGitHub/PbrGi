@@ -2,6 +2,7 @@
 #define _BILATERAL_BLUR_PASS_
 
 #include <memory>
+#include <vector>
 
 namespace PbrGi {
 
@@ -14,10 +15,13 @@ namespace PbrGi {
 
     class BilateralBlurPass {
         public:
-            BilateralBlurPass(std::shared_ptr<Texture> aoTexture);
+            BilateralBlurPass(std::shared_ptr<Texture> aoTexture, std::shared_ptr<Texture> depthTexture);
             ~BilateralBlurPass();
             void render();
             std::shared_ptr<Texture> result();
+
+        private:
+            std::vector<float> GaussianKernel(size_t const gaussianWidth, float const stdDev);
 
         private:
             std::shared_ptr<Program> mRenderProgram;
@@ -27,6 +31,7 @@ namespace PbrGi {
             std::shared_ptr<Texture> mBilateralBlurTextureY;
             std::shared_ptr<model> mTextureModel;
             std::shared_ptr<Texture> mAoTexture;
+            std::shared_ptr<Texture> mDepthTexture;
     };
 }
 

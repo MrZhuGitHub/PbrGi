@@ -154,9 +154,9 @@ int main() {
 
     std::shared_ptr<PbrGi::GaussianBlurPass> kGaussianBlurPass = std::make_shared<PbrGi::GaussianBlurPass>(kShadowPass->result());
 
-    std::shared_ptr<PbrGi::GtaoPass> kGtaoPass = std::make_shared<PbrGi::GtaoPass>(kShadowPass->result());
+    std::shared_ptr<PbrGi::GtaoPass> kGtaoPass = std::make_shared<PbrGi::GtaoPass>(kCamera, kShadowPass->result());
 
-    std::shared_ptr<PbrGi::BilateralBlurPass> kBilateralBlurPass = std::make_shared<PbrGi::BilateralBlurPass>(kGtaoPass->result());
+    std::shared_ptr<PbrGi::BilateralBlurPass> kBilateralBlurPass = std::make_shared<PbrGi::BilateralBlurPass>(kGtaoPass->result(), kShadowPass->result());
 
     std::shared_ptr<PbrGi::ColorPass> kColorPass = std::make_shared<PbrGi::ColorPass>(kCamera, iblSkyBox, kBilateralBlurPass->result(), kGaussianBlurPass->result(), kLight);
 

@@ -43,6 +43,9 @@ uniform float vsmLightBleedReduction;
 uniform bool unLight;
 uniform vec3 unLightColor;
 
+uniform bool aoTextureExist;
+uniform sampler2D aoTexture;
+
 float linstep(const float min, const float max, const float v) {
     // we could use smoothstep() too
     return clamp((v - min) / (max - min), 0.0, 1.0);

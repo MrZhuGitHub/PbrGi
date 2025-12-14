@@ -17,9 +17,7 @@ namespace PbrGi {
             GtaoPass(std::shared_ptr<camera> camera, std::shared_ptr<Texture> depthTexture);
             ~GtaoPass();
             void render();
-            std::shared_ptr<Texture> result() {
-                return mAmbientObscuranceTexture;
-            }
+            std::shared_ptr<Texture> result();
 
         private:
             std::shared_ptr<Program> mRenderProgram;
@@ -27,6 +25,7 @@ namespace PbrGi {
             std::shared_ptr<Texture> mAmbientObscuranceTexture;
             std::shared_ptr<Texture> mDepthTexture;
             std::shared_ptr<camera> mCamera;
+            std::shared_ptr<model> mTextureModel;
     };
 }
 

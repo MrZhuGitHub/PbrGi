@@ -29,7 +29,8 @@ namespace PbrGi {
                                                 "normalTexture", 
                                                 "metalnessTexture", 
                                                 "emissionTexture",
-                                                "shadowMapTexture"};
+                                                "shadowMapTexture",
+                                                "aoTexture"};
 
         mProgram = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\pbr.vs", ".\\shader\\pbr.fs");
 
@@ -44,13 +45,6 @@ namespace PbrGi {
         mDfgTexture->init2DTextureHDR(".\\asset\\dfg\\dfg.hdr", true);
 
         mProgram->use();
-        unsigned int id;
-        mIblTexture->getTextureId(id);
-        mProgram->setTextureCube("sampler0_iblSpecular", id);
-
-        unsigned int id1;
-        mDfgTexture->getTextureId(id1);
-        mProgram->setTexture2D("sampler0_iblDFG", id1);
 
         mProgram->setFloat("sampler0_iblSpecular_mipmapLevel", 4);
 
@@ -72,6 +66,26 @@ namespace PbrGi {
         mProgram->setViewMatrix(mCamera->getViewMatrix());
         mProgram->setProjectionMatrix(mCamera->getProjectMatrix());
         mProgram->setProperty(mCamera->getCameraPosition(), "cameraPosition");
+
+        unsigned int iblTextureId;
+        mIblTexture->getTextureId(iblTextureId);
+        mProgram->setTextureCube("sampler0_iblSpecular", iblTextureId);
+
+        unsigned int dfgTextureId;
+        mDfgTexture->getTextureId(dfgTextureId);
+        mProgram->setTexture2D("sampler0_iblDFG", dfgTextureId);
+
+        if (mBilateralBlurAoTexture) {
+            unsigned int aoTextureId;
+            if (mBilateralBlurAoTexture->getTextureId(aoTextureId)) {
+                mProgram->setTexture2D("aoTexture", aoTextureId);
+                mProgram->setBool("aoTextureExist", true);
+            } else {
+                mProgram->setBool("aoTextureExist", false);
+            }
+        } else {
+            mProgram->setBool("aoTextureExist", false);
+        }
 
 
         if (mGaussianBlurDepthTexture && mLightCamera) { 

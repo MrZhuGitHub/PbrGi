@@ -54,6 +54,12 @@
     <ClCompile Include="gaussianBlurPass.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="bilateralBlurPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="gtaoPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -86,45 +92,57 @@
     <ClInclude Include="gaussianBlurPass.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="bilateralBlurPass.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="gtaoPass.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="asset\su7.glb">
       <Filter>源文件\asset</Filter>
     </None>
-    <None Include="shader\SimpleFragment.glsl">
+    <None Include="shader\bilateralBlur.fs">
       <Filter>源文件\shader</Filter>
     </None>
-    <None Include="shader\SimpleVertex.glsl">
+    <None Include="shader\bilateralBlur.vs">
       <Filter>源文件\shader</Filter>
     </None>
-    <None Include="shader\pbrFragment.glsl">
+    <None Include="shader\gaussianBlur.fs">
       <Filter>源文件\shader</Filter>
     </None>
-    <None Include="shader\pbrVertex.glsl">
+    <None Include="shader\gaussianBlur.vs">
       <Filter>源文件\shader</Filter>
     </None>
-    <None Include="shader\skyboxFragment.glsl">
+    <None Include="shader\gtao.fs">
       <Filter>源文件\shader</Filter>
     </None>
-    <None Include="shader\skyboxVertex.glsl">
+    <None Include="shader\gtao.vs">
       <Filter>源文件\shader</Filter>
     </None>
-    <None Include="shader\gaussianBlurFragment.glsl">
+    <None Include="shader\pbr.fs">
       <Filter>源文件\shader</Filter>
     </None>
-    <None Include="shader\gaussianBlurVertex.glsl">
+    <None Include="shader\pbr.vs">
       <Filter>源文件\shader</Filter>
     </None>
-    <None Include="shader\shadowDepthFragment.glsl">
+    <None Include="shader\shadowDepth.fs">
       <Filter>源文件\shader</Filter>
     </None>
-    <None Include="shader\shadowDepthVertex.glsl">
+    <None Include="shader\shadowDepth.vs">
       <Filter>源文件\shader</Filter>
     </None>
-    <None Include="shader\unLightFragment.glsl">
+    <None Include="shader\Simple.fs">
       <Filter>源文件\shader</Filter>
     </None>
-    <None Include="shader\unLightVertex.glsl">
+    <None Include="shader\Simple.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\skybox.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\skybox.vs">
       <Filter>源文件\shader</Filter>
     </None>
   </ItemGroup>

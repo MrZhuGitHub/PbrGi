@@ -155,10 +155,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bilateralBlurPass.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="colorPass.cpp" />
     <ClCompile Include="framebuffer.cpp" />
     <ClCompile Include="gaussianBlurPass.cpp" />
+    <ClCompile Include="gtaoPass.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="PbrGl.cpp" />
     <ClCompile Include="program.cpp" />
@@ -168,11 +170,13 @@
     <ClCompile Include="third-party\glad\src\glad.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bilateralBlurPass.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="colorPass.h" />
     <ClInclude Include="common.hpp" />
     <ClInclude Include="framebuffer.h" />
     <ClInclude Include="gaussianBlurPass.h" />
+    <ClInclude Include="gtaoPass.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="program.h" />
     <ClInclude Include="shadowPass.h" />
@@ -181,18 +185,20 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="asset\su7.glb" />
-    <None Include="shader\gaussianBlurFragment.glsl" />
-    <None Include="shader\gaussianBlurVertex.glsl" />
-    <None Include="shader\pbrFragment.glsl" />
-    <None Include="shader\pbrVertex.glsl" />
-    <None Include="shader\shadowDepthFragment.glsl" />
-    <None Include="shader\shadowDepthVertex.glsl" />
-    <None Include="shader\SimpleFragment.glsl" />
-    <None Include="shader\SimpleVertex.glsl" />
-    <None Include="shader\skyboxFragment.glsl" />
-    <None Include="shader\skyboxVertex.glsl" />
-    <None Include="shader\unLightFragment.glsl" />
-    <None Include="shader\unLightVertex.glsl" />
+    <None Include="shader\bilateralBlur.fs" />
+    <None Include="shader\bilateralBlur.vs" />
+    <None Include="shader\gaussianBlur.fs" />
+    <None Include="shader\gaussianBlur.vs" />
+    <None Include="shader\gtao.fs" />
+    <None Include="shader\gtao.vs" />
+    <None Include="shader\pbr.fs" />
+    <None Include="shader\pbr.vs" />
+    <None Include="shader\shadowDepth.fs" />
+    <None Include="shader\shadowDepth.vs" />
+    <None Include="shader\Simple.fs" />
+    <None Include="shader\Simple.vs" />
+    <None Include="shader\skybox.fs" />
+    <None Include="shader\skybox.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

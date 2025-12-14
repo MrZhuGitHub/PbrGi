@@ -87,12 +87,13 @@ namespace PbrGi {
         }
 
         if (material_.baseColorTexture.has_value()) {
-            program->setBool("baseColorTextureExist", true);
             unsigned int id;
             if (material_.baseColorTexture.value()->getTextureId(id)) {
                 program->setTexture2D("baseColorTexture", id);
+                program->setBool("baseColorTextureExist", true);
+            } else {
+                program->setBool("baseColorTextureExist", false);
             }
-            
         }
         else {
             program->setBool("baseColorTextureExist", false);
@@ -540,6 +541,13 @@ namespace PbrGi {
                 v.texCoords.x = geometryData[i + 3];
                 v.texCoords.y = geometryData[i + 4];
             }
+
+            if (stride >= 8) {
+                v.normal.x = geometryData[i + 5];
+                v.normal.y = geometryData[i + 6];
+                v.normal.z = geometryData[i + 7];
+            }
+
             vertices_.push_back(v);
         }
 
