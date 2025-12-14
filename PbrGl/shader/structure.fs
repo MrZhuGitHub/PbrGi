@@ -1,9 +1,7 @@
 #version 330 core
 layout(location = 0) out vec4 Out0_color;
 layout(location = 1) out vec2 Out1_color;
-layout(location = 2) out vec2 Out2_color;
 
-uniform float vsmExponent;
 uniform float near;
 uniform float far;
 
@@ -20,9 +18,6 @@ void main()
     highp float remapDepth = ((-depth) - near)/(far - near);
     remapDepth = remapDepth * 2.0 - 1.0;
 
-    remapDepth = exp(vsmExponent * remapDepth);
-    Out1_color.x = remapDepth;
-    Out1_color.y = remapDepth * remapDepth;
-
-    Out2_color.x = depth;
+    Out1_color.x = depth;
+    Out1_color.y = remapDepth;
 }

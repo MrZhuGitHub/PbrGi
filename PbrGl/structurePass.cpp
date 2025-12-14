@@ -1,11 +1,11 @@
-#include "shadowPass.h"
+#include "structurePass.h"
 #include "common.hpp"
 
 namespace PbrGi {
-    ShadowPass::ShadowPass(std::shared_ptr<camera> lightCamera)
-        : mLightPosition(lightCamera) {
+    StructurePass::StructurePass(std::shared_ptr<camera> camera)
+        : mCamera(camera) {
 
-        mRenderProgram = std::make_shared<PbrGi::Program>(std::vector<std::string>{}, ".\\shader\\shadowDepth.vs", ".\\shader\\shadowDepth.fs");
+        mRenderProgram = std::make_shared<PbrGi::Program>(std::vector<std::string>{}, ".\\shader\\structure.vs", ".\\shader\\structure.fs");
         mDepthTexture = std::make_shared<PbrGi::Texture>();
         mDepthTexture->init2DTexture(SCR_WIDTH, SCR_HEIGHT, GL_RGB16F, false);
 
@@ -13,17 +13,17 @@ namespace PbrGi {
         std::vector<std::shared_ptr<PbrGi::Texture>> multiColorOutput;
         multiColorOutput.push_back(mDepthTexture);
         if (mFramebuffer->init(multiColorOutput)) {
-            std::cout << "shadow depth framebuffer init success" << std::endl;
+            std::cout << "structure framebuffer init success" << std::endl;
         } else {
-            std::cout << "shadow depth framebuffer init failed" << std::endl;
+            std::cout << "structure framebuffer init failed" << std::endl;
         }
     }
 
-    ShadowPass::~ShadowPass() {
+    StructurePass::~StructurePass() {
 
     }
     
-    void ShadowPass::render(std::vector<std::shared_ptr<model>> models) {
+    void StructurePass::render(std::vector<std::shared_ptr<model>> models) {
         mFramebuffer->setup();
 
         GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
@@ -34,13 +34,11 @@ namespace PbrGi {
 
         mRenderProgram->use();
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-        mRenderProgram->setViewMatrix(mLightPosition->getViewMatrix());
-        mRenderProgram->setProjectionMatrix(mLightPosition->getProjectMatrix());
+        mRenderProgram->setViewMatrix(mCamera->getViewMatrix());
+        mRenderProgram->setProjectionMatrix(mCamera->getProjectMatrix());
 
-        mRenderProgram->setFloat(mLightPosition->near(), "near");
-        mRenderProgram->setFloat(mLightPosition->far(), "far");
-        float vsmExponent = 5.54f;
-        mRenderProgram->setFloat(vsmExponent, "vsmExponent");
+        mRenderProgram->setFloat(mCamera->near(), "near");
+        mRenderProgram->setFloat(mCamera->far(), "far");
 
         for (auto& it : models) {
             it->drawModel(mRenderProgram);

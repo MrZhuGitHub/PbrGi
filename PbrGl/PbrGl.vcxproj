@@ -166,6 +166,7 @@
     <ClCompile Include="program.cpp" />
     <ClCompile Include="shadowPass.cpp" />
     <ClCompile Include="skybox.cpp" />
+    <ClCompile Include="structurePass.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="third-party\glad\src\glad.c" />
   </ItemGroup>
@@ -181,6 +182,7 @@
     <ClInclude Include="program.h" />
     <ClInclude Include="shadowPass.h" />
     <ClInclude Include="skybox.h" />
+    <ClInclude Include="structurePass.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +201,8 @@
     <None Include="shader\Simple.vs" />
     <None Include="shader\skybox.fs" />
     <None Include="shader\skybox.vs" />
+    <None Include="shader\structure.fs" />
+    <None Include="shader\structure.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -17,7 +17,7 @@ namespace PbrGi {
         mRenderProgram = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\gtao.vs", ".\\shader\\gtao.fs");
 
         mAmbientObscuranceTexture = std::make_shared<PbrGi::Texture>();
-        mAmbientObscuranceTexture->init2DTexture(SCR_WIDTH, SCR_HEIGHT, GL_RGBA, false);
+        mAmbientObscuranceTexture->init2DTexture(SCR_WIDTH, SCR_HEIGHT, GL_RGBA8, false);
 
         mFramebuffer = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, false);
         std::vector<std::shared_ptr<PbrGi::Texture>> multiColorOutput;
@@ -51,15 +51,44 @@ namespace PbrGi {
     void GtaoPass::render() {
             mFramebuffer->setup();
 
-            GLenum buffers[] = {GL_COLOR_ATTACHMENT1};
-            glDrawBuffers(1, buffers);
+            GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+            glDrawBuffers(2, buffers);
 
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             mRenderProgram->use();
             glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-            
+
+            mRenderProgram->setProperty(glm::vec2(SCR_WIDTH, SCR_HEIGHT), "resolution");
+            mRenderProgram->setProperty(glm::inverse(mCamera->getProjectMatrix()), "invProjection");
+
+            float radius = 0.3;
+            const float projectionScale = std::min(
+                    0.5f * mCamera->getProjectMatrix()[0][0] * SCR_WIDTH,
+                    0.5f * mCamera->getProjectMatrix()[1][1] * SCR_HEIGHT);
+
+            float projectionScaleRadius = projectionScale * radius;
+            mRenderProgram->setProperty(projectionScaleRadius, "projectionScaleRadius");
+
+            float stepsPerSlice = 3.0;
+            mRenderProgram->setProperty(stepsPerSlice, "stepsPerSlice");
+
+            glm::vec2 sliceCount = glm::vec2(4.0, 1.0/4.0);
+            mRenderProgram->setProperty(sliceCount, "sliceCount");
+
+            float thicknessHeuristic = 0.004;
+            mRenderProgram->setProperty(thicknessHeuristic, "thicknessHeuristic");
+
+            float invRadiusSquared = 1.0/(radius * radius);
+            mRenderProgram->setProperty(invRadiusSquared, "invRadiusSquared");
+
+            float power = 1.0;
+            mRenderProgram->setProperty(power, "power");
+
+            float invFarPlane = 1.0/mCamera->far();
+            mRenderProgram->setProperty(invFarPlane, "invFarPlane");
+
             unsigned int textureId;
             if (mDepthTexture->getTextureId(textureId)) {
                 mRenderProgram->setTexture2D("depthTexture", textureId);

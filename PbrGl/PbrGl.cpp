@@ -16,6 +16,7 @@
 #include "gaussianBlurPass.h"
 #include "bilateralBlurPass.h"
 #include "gtaoPass.h"
+#include "structurePass.h"
 
 float kReleaseMouseX = 0.0f, kReleaseMouseY = 0.0f;
 float kPushMouseX = 0.0f, kPushMouseY = 0.0f;
@@ -152,11 +153,13 @@ int main() {
 
     std::shared_ptr<PbrGi::ShadowPass> kShadowPass = std::make_shared<PbrGi::ShadowPass>(kLight);
 
+    std::shared_ptr<PbrGi::StructurePass> kStructurePass = std::make_shared<PbrGi::StructurePass>(kCamera);
+
     std::shared_ptr<PbrGi::GaussianBlurPass> kGaussianBlurPass = std::make_shared<PbrGi::GaussianBlurPass>(kShadowPass->result());
 
-    std::shared_ptr<PbrGi::GtaoPass> kGtaoPass = std::make_shared<PbrGi::GtaoPass>(kCamera, kShadowPass->result());
+    std::shared_ptr<PbrGi::GtaoPass> kGtaoPass = std::make_shared<PbrGi::GtaoPass>(kCamera, kStructurePass->result());
 
-    std::shared_ptr<PbrGi::BilateralBlurPass> kBilateralBlurPass = std::make_shared<PbrGi::BilateralBlurPass>(kGtaoPass->result(), kShadowPass->result());
+    std::shared_ptr<PbrGi::BilateralBlurPass> kBilateralBlurPass = std::make_shared<PbrGi::BilateralBlurPass>(kGtaoPass->result(), kStructurePass->result());
 
     std::shared_ptr<PbrGi::ColorPass> kColorPass = std::make_shared<PbrGi::ColorPass>(kCamera, iblSkyBox, kBilateralBlurPass->result(), kGaussianBlurPass->result(), kLight);
 
@@ -167,6 +170,7 @@ int main() {
         // input
         processInput(window);
         
+        kStructurePass->render(models);
         kShadowPass->render(models);
         kGaussianBlurPass->render(blurWidth);
         kGtaoPass->render();

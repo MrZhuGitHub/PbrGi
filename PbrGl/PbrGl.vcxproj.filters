@@ -60,6 +60,9 @@
     <ClCompile Include="gtaoPass.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="structurePass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -96,6 +99,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="gtaoPass.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="structurePass.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -143,6 +149,12 @@
       <Filter>源文件\shader</Filter>
     </None>
     <None Include="shader\skybox.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\structure.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\structure.vs">
       <Filter>源文件\shader</Filter>
     </None>
   </ItemGroup>
