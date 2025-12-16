@@ -7,16 +7,16 @@ namespace PbrGi {
 
         mRenderProgram = std::make_shared<PbrGi::Program>(std::vector<std::string>{}, ".\\shader\\structure.vs", ".\\shader\\structure.fs");
         mDepthTexture = std::make_shared<PbrGi::Texture>();
-        mDepthTexture->init2DTexture(SCR_WIDTH, SCR_HEIGHT, GL_RGB16F, false);
 
         mFramebuffer = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, true);
-        std::vector<std::shared_ptr<PbrGi::Texture>> multiColorOutput;
-        multiColorOutput.push_back(mDepthTexture);
-        if (mFramebuffer->init(multiColorOutput)) {
+
+        if (mFramebuffer->init()) {
             std::cout << "structure framebuffer init success" << std::endl;
         } else {
             std::cout << "structure framebuffer init failed" << std::endl;
         }
+        mDepthTexture = mFramebuffer->getDepthBuffer();
+
     }
 
     StructurePass::~StructurePass() {
@@ -26,8 +26,8 @@ namespace PbrGi {
     void StructurePass::render(std::vector<std::shared_ptr<model>> models) {
         mFramebuffer->setup();
 
-        GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-        glDrawBuffers(2, buffers);
+        GLenum buffers[] = {GL_COLOR_ATTACHMENT0};
+        glDrawBuffers(1, buffers);
 
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

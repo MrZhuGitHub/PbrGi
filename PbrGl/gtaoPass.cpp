@@ -63,31 +63,31 @@ namespace PbrGi {
             mRenderProgram->setProperty(glm::vec2(SCR_WIDTH, SCR_HEIGHT), "resolution");
             mRenderProgram->setProperty(glm::inverse(mCamera->getProjectMatrix()), "invProjection");
 
-            float radius = 0.3;
+            float radius = mCamera->far() / 100.0f;
             const float projectionScale = std::min(
                     0.5f * mCamera->getProjectMatrix()[0][0] * SCR_WIDTH,
                     0.5f * mCamera->getProjectMatrix()[1][1] * SCR_HEIGHT);
 
             float projectionScaleRadius = projectionScale * radius;
-            mRenderProgram->setProperty(projectionScaleRadius, "projectionScaleRadius");
+            mRenderProgram->setFloat(projectionScaleRadius, "projectionScaleRadius");
 
             float stepsPerSlice = 3.0;
-            mRenderProgram->setProperty(stepsPerSlice, "stepsPerSlice");
+            mRenderProgram->setFloat(stepsPerSlice, "stepsPerSlice");
 
             glm::vec2 sliceCount = glm::vec2(4.0, 1.0/4.0);
             mRenderProgram->setProperty(sliceCount, "sliceCount");
 
             float thicknessHeuristic = 0.004;
-            mRenderProgram->setProperty(thicknessHeuristic, "thicknessHeuristic");
+            mRenderProgram->setFloat(thicknessHeuristic, "thicknessHeuristic");
 
             float invRadiusSquared = 1.0/(radius * radius);
-            mRenderProgram->setProperty(invRadiusSquared, "invRadiusSquared");
+            mRenderProgram->setFloat(invRadiusSquared, "invRadiusSquared");
 
             float power = 1.0;
-            mRenderProgram->setProperty(power, "power");
+            mRenderProgram->setFloat(power, "power");
 
             float invFarPlane = 1.0/mCamera->far();
-            mRenderProgram->setProperty(invFarPlane, "invFarPlane");
+            mRenderProgram->setFloat(invFarPlane, "invFarPlane");
 
             unsigned int textureId;
             if (mDepthTexture->getTextureId(textureId)) {

@@ -1,6 +1,6 @@
 #version 330 core
 layout(location = 0) out vec4 Out0_color;
-layout(location = 1) out vec2 Out1_color;
+//layout(location = 1) out vec2 Out1_color;
 
 uniform float near;
 uniform float far;
@@ -15,9 +15,9 @@ highp float LinearizeDepth(float depth)
 
 void main()
 {
-    highp float remapDepth = ((-depth) - near)/(far - near);
-    remapDepth = remapDepth * 2.0 - 1.0;
+    //highp float remapDepth = ((-depth) - near)/(far - near);
 
-    Out1_color.x = depth;
-    Out1_color.y = remapDepth;
+    //Out1_color.x = depth;
+    //Out1_color.y = remapDepth;
+    Out0_color = vec4(1.0, 1.0, 1.0, 1.0);
 }

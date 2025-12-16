@@ -24,6 +24,14 @@ const float kLog2LodRate = 3.0;
 
 #define saturate(x)                 clamp(x, 0.0, 1.0)
 
+highp float linearizeDepth(highp float depth) {
+
+    const highp float preventDiv0 = 1.0 / 16777216.0;
+    mat4 p = invProjection;
+
+    return (depth * p[2].z + p[3].z) / max(depth * p[2].w + p[3].w, preventDiv0);
+}
+
 highp vec3 computeViewSpacePositionFromDepth(highp vec2 uv, highp float linearDepth,
         highp vec2 positionParams) {
     return vec3((0.5 - uv) * positionParams * linearDepth, linearDepth);
@@ -37,18 +45,16 @@ highp vec3 computeViewSpaceNormal(const highp vec2 uv,
 
     highp vec2 uvdx = uv + vec2(texel.x, 0.0);
     highp vec2 uvdy = uv + vec2(0.0, texel.y);
-    vec3 px = computeViewSpacePositionFromDepth(uvdx,
-            texture(depthTexture, uvdx).r, positionParams);
-    vec3 py = computeViewSpacePositionFromDepth(uvdy,
-            texture(depthTexture, uvdy).r, positionParams);
+    vec3 px = computeViewSpacePositionFromDepth(uvdx, linearizeDepth(textureLod(depthTexture, uvdx, 0.0).r), positionParams);
+    vec3 py = computeViewSpacePositionFromDepth(uvdy, linearizeDepth(textureLod(depthTexture, uvdy, 0.0).r), positionParams);
     vec3 dpdx = px - position;
     vec3 dpdy = py - position;
     return normalize(cross(dpdx, dpdy));;
 }
 
 highp vec3 getViewSpacePosition(vec2 uv, float level) {
-    highp float depth = texture(depthTexture, uv).r;
-    highp vec2 positionParams = vec2(invProjection[0][0], invProjection[1][1]);
+    highp float depth = linearizeDepth(textureLod(depthTexture, uv, 0.0).r);
+    highp vec2 positionParams = vec2(2.0 * invProjection[0][0], 2.0 * invProjection[1][1]);
     return computeViewSpacePositionFromDepth(uv, depth, positionParams);
 }
 
@@ -71,7 +77,7 @@ float acosFast(float x) {
     float y = abs(x);
     float p = -0.1565827 * y + 1.570796;
     p *= sqrt(1.0 - y);
-    return x >= 0.0 ? p : 3.14 - p;
+    return x >= 0.0 ? p : PI - p;
 }
 
 void groundTruthAmbientOcclusion(out float obscurance, highp vec2 uv, highp vec3 origin, vec3 normal) {
@@ -90,7 +96,7 @@ void groundTruthAmbientOcclusion(out float obscurance, highp vec2 uv, highp vec3
     float visibility = 0.0;
     for (float i = 0.0; i < sliceCount.x; i += 1.0) {
         float slice = (i + noiseDirection) * sliceCount.y;
-        float phi = slice * 3.14;
+        float phi = slice * PI;
         float cosPhi = cos(phi);
         float sinPhi = sin(phi);
         vec2 omega = vec2(cosPhi, sinPhi);
@@ -135,7 +141,7 @@ void groundTruthAmbientOcclusion(out float obscurance, highp vec2 uv, highp vec3
             vec2 invSampleDist = inversesqrt(sqSampleDist);
 
             // Use the view space radius to calculate the fallOff
-            vec2 fallOff = clamp(sqSampleDist.xy * invRadiusSquared * 2.0, 0.0, 1.0);
+            vec2 fallOff = clamp(sqSampleDist.xy * invRadiusSquared * 0.1, 0.0, 1.0);
 
             // sample horizon cos
             float shc0 = dot(sampleDelta0, viewDir) * invSampleDist.x;
@@ -167,15 +173,16 @@ vec2 pack(highp float normalizedDepth) {
     return vec2(hi, lo);
 }
 
+
 void main()
 {
     vec2 absolutePixelCoord = gl_FragCoord.xy;
     highp vec2 uv = absolutePixelCoord/resolution;
-    highp float depth = texture(depthTexture, uv).r;
-    highp vec2 positionParams = vec2(invProjection[0][0], invProjection[1][1]);
+    highp float depth = linearizeDepth(textureLod(depthTexture, uv, 0.0).r);
+    highp vec2 positionParams = vec2(2.0*invProjection[0][0], 2.0*invProjection[1][1]);
     highp vec3 origin = computeViewSpacePositionFromDepth(uv, depth, positionParams);
 
-    vec3 normal = computeViewSpaceNormal(uv, origin, resolution, positionParams);
+    vec3 normal = computeViewSpaceNormal(uv, origin, 1.0/resolution, positionParams);
 
     float occlusion = 0.0;
 

@@ -145,7 +145,7 @@ int main() {
 
     /**************load camera********************/
     //kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(-400.0, 100.0, -400.0));
-    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 2.5f, 25000.0f);
+    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 25.0f, 5000.0f);
     std::shared_ptr<PbrGi::camera> kLight = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 25000.0f, glm::vec3(0.0f, 10000.0f, -1000.0f));
 
     /**************setup renderPass********************/
