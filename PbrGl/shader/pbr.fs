@@ -201,23 +201,23 @@ void main()
 		vec3 hdrColor = iblLuminance * (Fd + Fr);
 
 		float visibility = 1.0;
-		if (shadowMapExist) {
-			highp vec4 p1 = lightCameraViewMatrix * vec4(position, 1.0);
-			highp float depth = (-p1.z - near)/(far - near);
-			if (depth <= 1.0 && depth >= 0) {
-				depth = depth * 2.0 - 1.0;
-				depth = vsmExponent * depth;
-				depth = exp(depth);
+		// if (shadowMapExist) {
+		// 	highp vec4 p1 = lightCameraViewMatrix * vec4(position, 1.0);
+		// 	highp float depth = (-p1.z - near)/(far - near);
+		// 	if (depth <= 1.0 && depth >= 0) {
+		// 		depth = depth * 2.0 - 1.0;
+		// 		depth = vsmExponent * depth;
+		// 		depth = exp(depth);
 
-				highp vec4 p2 = lightCameraProjectionMatrix * p1;
-				p2 = 0.5*(1.0 + p2/p2.w);
-				highp vec2 moments = texture(shadowMapTexture, p2.xy).xy;
+		// 		highp vec4 p2 = lightCameraProjectionMatrix * p1;
+		// 		p2 = 0.5*(1.0 + p2/p2.w);
+		// 		highp vec2 moments = texture(shadowMapTexture, p2.xy).xy;
 
-				if (isTexCoordValid(p2.xy)) {
-					visibility = evaluateShadowVSM(moments.xy, depth);
-				}
-			}
-		}
+		// 		if (isTexCoordValid(p2.xy)) {
+		// 			visibility = evaluateShadowVSM(moments.xy, depth);
+		// 		}
+		// 	}
+		// }
 		hdrColor = (visibility * 0.7 + 0.3) * hdrColor;
 
 		if (emissionTextureExist) {

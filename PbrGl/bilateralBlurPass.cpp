@@ -7,16 +7,18 @@
 
 #include "bilateralBlurPass.h"
 
-namespace PbrGi {
-    BilateralBlurPass::BilateralBlurPass(std::shared_ptr<Texture> aoTexture, std::shared_ptr<Texture> depthTexture)
-        : mAoTexture (aoTexture)
-        , mDepthTexture(depthTexture) {
+#include <algorithm>
 
-        std::vector<std::string> textureNames = {"depthTexture", "aoTexture"};
+namespace PbrGi {
+    BilateralBlurPass::BilateralBlurPass(std::shared_ptr<Texture> aoTexture, std::shared_ptr<camera> camera)
+        : mAoTexture (aoTexture)
+        , mCamera(camera) {
+
+        std::vector<std::string> textureNames = {"aoTexture"};
         mRenderProgram = std::make_shared<PbrGi::Program>(textureNames,  ".\\shader\\bilateralBlur.vs", ".\\shader\\bilateralBlur.fs");
 
         mBilateralBlurTextureX = std::make_shared<PbrGi::Texture>();
-        mBilateralBlurTextureX->init2DTexture(SCR_WIDTH, SCR_HEIGHT, GL_RGBA, false);
+        mBilateralBlurTextureX->init2DTexture(SCR_WIDTH, SCR_HEIGHT, GL_RGBA8, false);
         std::vector<std::shared_ptr<PbrGi::Texture>> multiColorOutputX;
         multiColorOutputX.push_back(mBilateralBlurTextureX);
         mFramebufferX = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, false);
@@ -27,10 +29,9 @@ namespace PbrGi {
         }
 
         mBilateralBlurTextureY = std::make_shared<PbrGi::Texture>();
-        mBilateralBlurTextureY->init2DTexture(SCR_WIDTH, SCR_HEIGHT, GL_RGBA, false);
+        mBilateralBlurTextureY->init2DTexture(SCR_WIDTH, SCR_HEIGHT, GL_RGBA8, false);
         std::vector<std::shared_ptr<PbrGi::Texture>> multiColorOutputY;
         multiColorOutputY.push_back(mBilateralBlurTextureY);
-        mFramebufferX = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, false);
         mFramebufferY = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, false);
         if (mFramebufferY->init(multiColorOutputY)) {
             std::cout << "BilateralBlur FramebufferY init success" << std::endl;
@@ -56,10 +57,10 @@ namespace PbrGi {
 
     }
 
-    std::vector<float> BilateralBlurPass::GaussianKernel(size_t const gaussianWidth, float const stdDev) {
+    std::vector<float> BilateralBlurPass::GaussianKernel(int const gaussianWidth, float const stdDev) {
         std::vector<float> outKernel;
-        const size_t gaussianSampleCount = (gaussianWidth + 1u) / 2u;
-        for (size_t i = 0; i < gaussianSampleCount; i++) {
+        const int gaussianSampleCount = std::min(16, (gaussianWidth + 1) / 2);
+        for (int i = 0; i < gaussianSampleCount; i++) {
             float const x = float(i);
             float const g = std::exp(-(x * x) / (2.0f * stdDev * stdDev));
             outKernel.push_back(g);
@@ -72,8 +73,8 @@ namespace PbrGi {
         {
             mFramebufferX->setup();
 
-            GLenum buffers[] = {GL_COLOR_ATTACHMENT1};
-            glDrawBuffers(1, buffers);
+            GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+            glDrawBuffers(2, buffers);
 
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -81,15 +82,23 @@ namespace PbrGi {
             mRenderProgram->use();
             glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
             
-            unsigned int depthTextureId;
-            if (mDepthTexture->getTextureId(depthTextureId)) {
-                mRenderProgram->setTexture2D("depthTexture", depthTextureId);
-            }
-
             unsigned int aoTextureId;
             if (mAoTexture->getTextureId(aoTextureId)) {
                 mRenderProgram->setTexture2D("aoTexture", aoTextureId);
             }
+
+            int gaussianWidth = 11;
+            float stdDev = 4.0;
+            std::vector<float> kernel = GaussianKernel(gaussianWidth, stdDev);
+            mRenderProgram->setInt("sampleCount", kernel.size());
+            mRenderProgram->setVecFloat("kernel", kernel.data(), kernel.size());
+
+            mRenderProgram->setProperty(glm::vec2(SCR_WIDTH, SCR_HEIGHT), "resolution");
+
+            mRenderProgram->setProperty(glm::vec2(2.0/(float)SCR_WIDTH, 0.0), "axis");
+
+            float bilateralThreshold = 0.1;
+            mRenderProgram->setFloat(mCamera->far()/bilateralThreshold, "farPlaneOverEdgeDistance");
 
             mTextureModel->drawModel(mRenderProgram);
 
@@ -99,8 +108,8 @@ namespace PbrGi {
         {
             mFramebufferY->setup();
 
-            GLenum buffers[] = {GL_COLOR_ATTACHMENT1};
-            glDrawBuffers(1, buffers);
+            GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+            glDrawBuffers(2, buffers);
 
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -108,15 +117,23 @@ namespace PbrGi {
             mRenderProgram->use();
             glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
             
-            
-            unsigned int depthTextureId, aoTextureId;
-            if (mDepthTexture->getTextureId(depthTextureId)) {
-                mRenderProgram->setTexture2D("depthTexture", depthTextureId);
-            }
-
+            unsigned int aoTextureId;
             if (mBilateralBlurTextureX->getTextureId(aoTextureId)) {
                 mRenderProgram->setTexture2D("aoTexture", aoTextureId);
             }
+
+            size_t gaussianWidth = 11;
+            float stdDev = 4.0;
+            std::vector<float> kernel = GaussianKernel(gaussianWidth, stdDev);
+            mRenderProgram->setInt("sampleCount", kernel.size());
+            mRenderProgram->setVecFloat("kernel", kernel.data(), kernel.size());
+
+            mRenderProgram->setProperty(glm::vec2(SCR_WIDTH, SCR_HEIGHT), "resolution");
+
+            mRenderProgram->setProperty(glm::vec2(0.0, 2.0/(float)SCR_HEIGHT), "axis");
+
+            float bilateralThreshold = 0.1;
+            mRenderProgram->setFloat(mCamera->far()/bilateralThreshold, "farPlaneOverEdgeDistance");
 
             mTextureModel->drawModel(mRenderProgram);
 

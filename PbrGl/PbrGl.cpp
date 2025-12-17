@@ -119,8 +119,8 @@ int main() {
     std::vector<std::shared_ptr<PbrGi::model>> models;
     //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\DamagedHelmet.glb");
     //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\sphere.glb");
-    //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\su7.glb");
-    auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\sponza.glb");
+    auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\su7.glb");
+    //auto su7 = std::make_shared<PbrGi::model>(".\\asset\\model\\sponza.glb");
 
     std::vector<float> box = su7->get3DBox();
     glm::mat4 trans1(1.0f);
@@ -145,8 +145,9 @@ int main() {
 
     /**************load camera********************/
     //kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(-400.0, 100.0, -400.0));
-    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 25.0f, 5000.0f);
-    std::shared_ptr<PbrGi::camera> kLight = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 25000.0f, glm::vec3(0.0f, 10000.0f, -1000.0f));
+    kCamera = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f);
+    //std::shared_ptr<PbrGi::camera> kLight = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 25000.0f, glm::vec3(0.0f, 10000.0f, -1000.0f));
+    std::shared_ptr<PbrGi::camera> kLight = std::make_shared<PbrGi::camera>(SCR_WIDTH, SCR_HEIGHT, 0.5f, 5000.0f, glm::vec3(1000.0f, 1000.0f, -1000.0f));
 
     /**************setup renderPass********************/
     std::shared_ptr<PbrGi::SkyBox> iblSkyBox = std::make_shared<PbrGi::SkyBox>(SCR_WIDTH, SCR_HEIGHT, kCamera);
@@ -159,7 +160,7 @@ int main() {
 
     std::shared_ptr<PbrGi::GtaoPass> kGtaoPass = std::make_shared<PbrGi::GtaoPass>(kCamera, kStructurePass->result());
 
-    std::shared_ptr<PbrGi::BilateralBlurPass> kBilateralBlurPass = std::make_shared<PbrGi::BilateralBlurPass>(kGtaoPass->result(), kStructurePass->result());
+    std::shared_ptr<PbrGi::BilateralBlurPass> kBilateralBlurPass = std::make_shared<PbrGi::BilateralBlurPass>(kGtaoPass->result(), kCamera);
 
     std::shared_ptr<PbrGi::ColorPass> kColorPass = std::make_shared<PbrGi::ColorPass>(kCamera, iblSkyBox, kBilateralBlurPass->result(), kGaussianBlurPass->result(), kLight);
 

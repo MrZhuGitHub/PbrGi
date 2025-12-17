@@ -28,8 +28,6 @@ namespace PbrGi {
             std::cout << "gtao framebuffer init failed" << std::endl;
         }
 
-        mAmbientObscuranceTexture = mFramebuffer->getColorBuffer(0);
-
         std::vector<float> geometryData = {
             1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
@@ -86,7 +84,7 @@ namespace PbrGi {
             float power = 1.0;
             mRenderProgram->setFloat(power, "power");
 
-            float invFarPlane = 1.0/mCamera->far();
+            float invFarPlane = -1.0/mCamera->far();
             mRenderProgram->setFloat(invFarPlane, "invFarPlane");
 
             unsigned int textureId;

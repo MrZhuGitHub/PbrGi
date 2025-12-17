@@ -15,13 +15,13 @@ namespace PbrGi {
 
     class BilateralBlurPass {
         public:
-            BilateralBlurPass(std::shared_ptr<Texture> aoTexture, std::shared_ptr<Texture> depthTexture);
+            BilateralBlurPass(std::shared_ptr<Texture> aoTexture, std::shared_ptr<camera> camera);
             ~BilateralBlurPass();
             void render();
             std::shared_ptr<Texture> result();
 
         private:
-            std::vector<float> GaussianKernel(size_t const gaussianWidth, float const stdDev);
+            std::vector<float> GaussianKernel(int const gaussianWidth, float const stdDev);
 
         private:
             std::shared_ptr<Program> mRenderProgram;
@@ -31,7 +31,7 @@ namespace PbrGi {
             std::shared_ptr<Texture> mBilateralBlurTextureY;
             std::shared_ptr<model> mTextureModel;
             std::shared_ptr<Texture> mAoTexture;
-            std::shared_ptr<Texture> mDepthTexture;
+            std::shared_ptr<camera> mCamera;
     };
 }
 
