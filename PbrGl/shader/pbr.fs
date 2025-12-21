@@ -46,6 +46,12 @@ uniform vec3 unLightColor;
 uniform bool aoTextureExist;
 uniform sampler2D aoTexture;
 
+uniform vec2 resolution;
+
+#define PI                          3.14159265359
+#define saturate(x)                 clamp(x, 0.0, 1.0)
+
+
 float linstep(const float min, const float max, const float v) {
     // we could use smoothstep() too
     return clamp((v - min) / (max - min), 0.0, 1.0);
@@ -115,8 +121,64 @@ bool isTexCoordValid(vec2 texCoord) {
            all(lessThanEqual(texCoord, vec2(0.99)));
 }
 
+float acosFast(float x) {
+    // Lagarde 2014, "Inverse trigonometric functions GPU optimization for AMD GCN architecture"
+    // This is the approximation of degree 1, with a max absolute error of 9.0x10^-3
+    float y = abs(x);
+    float p = -0.1565827 * y + 1.570796;
+    p *= sqrt(1.0 - y);
+    return x >= 0.0 ? p : PI - p;
+}
+
+/**
+ * Approximates acos(x) with a max absolute error of 9.0x10^-3.
+ * Valid only in the range 0..1.
+ */
+float acosFastPositive(float x) {
+    float p = -0.1565827 * x + 1.570796;
+    return p * sqrt(1.0 - x);
+}
+
+float sq(float x) {
+    return x * x;
+}
+
+float sphericalCapsIntersection(float cosCap1, float cosCap2, float cosDistance) {
+
+    float r1 = acosFastPositive(cosCap1);
+    float r2 = acosFastPositive(cosCap2);
+    float d  = acosFast(cosDistance);
+
+
+    if (min(r1, r2) <= max(r1, r2) - d) {
+        return 1.0 - max(cosCap1, cosCap2);
+    } else if (r1 + r2 <= d) {
+        return 0.0;
+    }
+
+    float delta = abs(r1 - r2);
+    float x = 1.0 - saturate((d - delta) / max(r1 + r2 - delta, 1e-4));
+
+    float area = sq(x) * (-2.0 * x + 3.0);
+    return area * (1.0 - max(cosCap1, cosCap2));
+}
+
+float SpecularAoCones(float NdotV, float visibility, float roughness) {
+
+    float cosAv = sqrt(1.0 - visibility);
+    float cosAs = exp2(-3.321928 * sq(roughness));
+    float cosB  = NdotV;
+
+    float ao = sphericalCapsIntersection(cosAv, cosAs, cosB) / (1.0 - cosAs);
+
+    return mix(1.0, ao, smoothstep(0.01, 0.09, roughness));
+}
+
 void main()
 {
+    vec2 absolutePixelCoord = gl_FragCoord.xy;
+    highp vec2 uv = absolutePixelCoord/resolution;
+
 	if (unLight) {
 		float visibility = 1.0;
 		if (shadowMapExist) {
@@ -138,6 +200,7 @@ void main()
 		}
 		
 		Out0_color = vec4(unLightColor * (0.7 + visibility * 0.3), 1.0);
+
 	} else {
 		float iblLuminance = 1.0;
 
@@ -172,6 +235,13 @@ void main()
 
 		float NdotV = dot(n, view);
 
+		float diffuseAO = 1.0;
+		float specularAO = 1.0;
+		if (aoTextureExist) {
+			diffuseAO = texture(aoTexture, uv).r;
+			specularAO = SpecularAoCones(abs(NdotV), diffuseAO, rough);
+		}
+
 		vec3 diffuseColor = (1.0 - meta) * color.rgb;
 		float reflectance = 0.5;
 		vec3 f0 = 0.16 * reflectance * reflectance * (1.0 - meta) + color * meta;
@@ -182,13 +252,13 @@ void main()
 		vec3 splitsum = mix(dfg.xxx, dfg.yyy, f0);
 		float lod = sampler0_iblSpecular_mipmapLevel * rough * (2.0 - rough);
 		vec3 reflect = 2.0 * NdotV * n - view;
-		vec3 Fr = splitsum * textureLod(sampler0_iblSpecular, reflect, lod).rgb;
+		vec3 Fr = splitsum * textureLod(sampler0_iblSpecular, reflect, lod).rgb * specularAO;
 
 		vec3 diffuseIrradiance = iblSH[0]
 								+ iblSH[1] * (n.y) + iblSH[2] * (n.z) + iblSH[3] * (n.x)
 								+ iblSH[4] * (n.y * n.x) + iblSH[5] * (n.y * n.z) + iblSH[6] * (3.0 * n.z * n.z - 1.0) + iblSH[7] * (n.z * n.x) + iblSH[8] * (n.x * n.x - n.y * n.y);
 
-		vec3 Fd = diffuseColor * max(diffuseIrradiance, 0.0) * (1.0 - splitsum);
+		vec3 Fd = diffuseColor * max(diffuseIrradiance, 0.0) * (1.0 - splitsum) * diffuseAO;
 
 		//clear coat
 		float Fc = F_Schlick(0.04, 1.0, abs(NdotV)) * clearCoat;
@@ -199,6 +269,7 @@ void main()
 		Fr += textureLod(sampler0_iblSpecular, reflect, clearCoatlod).rgb * Fc;
 
 		vec3 hdrColor = iblLuminance * (Fd + Fr);
+
 
 		float visibility = 1.0;
 		// if (shadowMapExist) {

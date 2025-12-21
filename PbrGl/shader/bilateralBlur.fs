@@ -15,7 +15,7 @@ highp float unpack(highp vec2 depth) {
 }
 
 float bilateralWeight(in highp float depth, in highp float sampleDepth) {
-    float diff = (sampleDepth - depth) * farPlaneOverEdgeDistance;
+    float diff = (sampleDepth - depth) * farPlaneOverEdgeDistance / depth;
     return max(0.0, 1.0 - diff * diff);
 }
 

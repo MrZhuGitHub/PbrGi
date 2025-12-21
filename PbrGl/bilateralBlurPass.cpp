@@ -87,7 +87,7 @@ namespace PbrGi {
                 mRenderProgram->setTexture2D("aoTexture", aoTextureId);
             }
 
-            int gaussianWidth = 11;
+            int gaussianWidth = 23;
             float stdDev = 4.0;
             std::vector<float> kernel = GaussianKernel(gaussianWidth, stdDev);
             mRenderProgram->setInt("sampleCount", kernel.size());
@@ -95,9 +95,9 @@ namespace PbrGi {
 
             mRenderProgram->setProperty(glm::vec2(SCR_WIDTH, SCR_HEIGHT), "resolution");
 
-            mRenderProgram->setProperty(glm::vec2(2.0/(float)SCR_WIDTH, 0.0), "axis");
+            mRenderProgram->setProperty(glm::vec2(1.0/(float)SCR_WIDTH, 0.0), "axis");
 
-            float bilateralThreshold = 0.1;
+            float bilateralThreshold = 50.0;
             mRenderProgram->setFloat(mCamera->far()/bilateralThreshold, "farPlaneOverEdgeDistance");
 
             mTextureModel->drawModel(mRenderProgram);
@@ -122,7 +122,7 @@ namespace PbrGi {
                 mRenderProgram->setTexture2D("aoTexture", aoTextureId);
             }
 
-            size_t gaussianWidth = 11;
+            size_t gaussianWidth = 23;
             float stdDev = 4.0;
             std::vector<float> kernel = GaussianKernel(gaussianWidth, stdDev);
             mRenderProgram->setInt("sampleCount", kernel.size());
@@ -130,9 +130,9 @@ namespace PbrGi {
 
             mRenderProgram->setProperty(glm::vec2(SCR_WIDTH, SCR_HEIGHT), "resolution");
 
-            mRenderProgram->setProperty(glm::vec2(0.0, 2.0/(float)SCR_HEIGHT), "axis");
+            mRenderProgram->setProperty(glm::vec2(0.0, 1.0/(float)SCR_HEIGHT), "axis");
 
-            float bilateralThreshold = 0.1;
+            float bilateralThreshold = 50.0;
             mRenderProgram->setFloat(mCamera->far()/bilateralThreshold, "farPlaneOverEdgeDistance");
 
             mTextureModel->drawModel(mRenderProgram);

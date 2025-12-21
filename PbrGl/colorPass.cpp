@@ -87,6 +87,7 @@ namespace PbrGi {
             mProgram->setBool("aoTextureExist", false);
         }
 
+        mProgram->setProperty(glm::vec2(SCR_WIDTH, SCR_HEIGHT), "resolution");
 
         if (mGaussianBlurDepthTexture && mLightCamera) { 
             mProgram->setBool("shadowMapExist", true);
