@@ -24,6 +24,7 @@ namespace PbrGi {
     }
     
     void StructurePass::render(std::vector<std::shared_ptr<model>> models) {
+        glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "StructurePass");
         mFramebuffer->setup();
 
         GLenum buffers[] = {GL_COLOR_ATTACHMENT0};
@@ -45,5 +46,6 @@ namespace PbrGi {
         }
 
         mFramebuffer->unload();
+        glPopDebugGroup();
     }
 }

@@ -47,6 +47,8 @@ namespace PbrGi {
     }
 
     void GtaoPass::render() {
+            glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "GtaoPass");
+
             mFramebuffer->setup();
 
             GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
@@ -95,6 +97,8 @@ namespace PbrGi {
             mTextureModel->drawModel(mRenderProgram);
 
             mFramebuffer->unload();
+            glPopDebugGroup();
+
     }
 
     std::shared_ptr<Texture> GtaoPass::result() {

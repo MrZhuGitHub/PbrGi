@@ -24,6 +24,8 @@ namespace PbrGi {
     }
     
     void ShadowPass::render(std::vector<std::shared_ptr<model>> models) {
+        glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "ShadowPass");
+
         mFramebuffer->setup();
 
         GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
@@ -47,5 +49,7 @@ namespace PbrGi {
         }
 
         mFramebuffer->unload();
+        glPopDebugGroup();
+
     }
 }

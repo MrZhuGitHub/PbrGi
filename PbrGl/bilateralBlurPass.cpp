@@ -69,6 +69,8 @@ namespace PbrGi {
     }
 
     void BilateralBlurPass::render() {
+        glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "BilateralBlurPass");
+
 
         {
             mFramebufferX->setup();
@@ -139,6 +141,8 @@ namespace PbrGi {
 
             mFramebufferY->unload();
         }
+        glPopDebugGroup();
+
 
     }
 

@@ -52,6 +52,8 @@ namespace PbrGi {
     }
 
     void ColorPass::render(std::vector<std::shared_ptr<model>> models, bool skybox) {
+        glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "ColorPass");
+
         mFrameBuffer->setup();
 
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -121,6 +123,8 @@ namespace PbrGi {
         
         mFrameBuffer->unload();
         mFrameBuffer->blitToFrameBuffer(0);
+        glPopDebugGroup();
+
     }
 
     ColorPass::~ColorPass() {

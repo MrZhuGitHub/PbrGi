@@ -96,6 +96,7 @@ namespace PbrGi {
     }
 
     void GaussianBlurPass::render(float blurWidth) {
+        glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "GaussianBlurPass");
 
         {
             mFramebufferX->setup();
@@ -168,6 +169,8 @@ namespace PbrGi {
 
             mFramebufferY->unload();
         }
+        glPopDebugGroup();
+
 
     }
 
