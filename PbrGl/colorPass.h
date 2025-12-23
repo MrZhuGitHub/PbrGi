@@ -24,6 +24,7 @@ namespace PbrGi {
 
         private:
             std::shared_ptr<frameBuffer> mFrameBuffer;
+            std::shared_ptr<frameBuffer> mFrameBufferResolve;
             std::shared_ptr<Texture> mIblTexture;
             std::shared_ptr<Texture> mDfgTexture;
             std::shared_ptr<Program> mProgram;

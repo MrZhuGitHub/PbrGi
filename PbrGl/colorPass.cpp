@@ -41,6 +41,13 @@ namespace PbrGi {
             std::cout << "colorPass framebuffer init failed" << std::endl;
         }
 
+        mFrameBufferResolve = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT);
+        if (mFrameBufferResolve->init()) {
+            std::cout << "colorPass resolve framebuffer init success" << std::endl;
+        } else {
+            std::cout << "colorPass resolve framebuffer init failed" << std::endl;
+        }
+
         mDfgTexture = std::make_shared<PbrGi::Texture>();
         mDfgTexture->init2DTextureHDR(".\\asset\\dfg\\dfg.hdr", true);
 
@@ -122,7 +129,11 @@ namespace PbrGi {
         }
         
         mFrameBuffer->unload();
-        mFrameBuffer->blitToFrameBuffer(0);
+
+
+        mFrameBuffer->blitToFrameBuffer(mFrameBufferResolve->getFrameBuffer());
+
+        mFrameBufferResolve->blitToFrameBuffer(0);
         glPopDebugGroup();
 
     }

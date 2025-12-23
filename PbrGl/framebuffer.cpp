@@ -25,7 +25,7 @@ namespace PbrGi {
 
             glGenTextures(1, &textureId_);
             glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textureId_);
-            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples_, GL_RGB, width_, height_, GL_TRUE);
+            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples_, GL_RGBA, width_, height_, GL_TRUE);
             glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, textureId_, 0);
@@ -93,7 +93,7 @@ namespace PbrGi {
 
                 glGenTextures(1, &textureId_);
                 glBindTexture(GL_TEXTURE_2D, textureId_);
-                //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width_, height_, 0, GL_RGBA, GL_FLOAT, NULL);
+                //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width_, height_, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
                 glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width_, height_);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -118,6 +118,7 @@ namespace PbrGi {
                         attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
                     }
                 }
+                attachments.insert(attachments.begin(), GL_COLOR_ATTACHMENT0);
                 glDrawBuffers(attachments.size(), attachments.data());
             }
 
@@ -175,8 +176,11 @@ namespace PbrGi {
         }
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBufferId_);
+
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer);
-        glBlitFramebuffer(0, 0, width_, height_, 0, 0, width_, height_, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+
+        glBlitFramebuffer(0, 0, width_, height_, 0, 0, width_, height_, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
         return initSuccess_;
     }
