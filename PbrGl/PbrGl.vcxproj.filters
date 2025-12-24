@@ -63,6 +63,21 @@
     <ClCompile Include="structurePass.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="FxaaPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="hierarchicalDepthPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SsrPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TaaPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="toneMapPass.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -104,6 +119,21 @@
     <ClInclude Include="structurePass.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="FxaaPass.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="hierarchicalDepthPass.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SsrPass.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TaaPass.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="toneMapPass.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="asset\su7.glb">
@@ -125,12 +155,6 @@
       <Filter>源文件\shader</Filter>
     </None>
     <None Include="shader\gtao.vs">
-      <Filter>源文件\shader</Filter>
-    </None>
-    <None Include="shader\pbr.fs">
-      <Filter>源文件\shader</Filter>
-    </None>
-    <None Include="shader\pbr.vs">
       <Filter>源文件\shader</Filter>
     </None>
     <None Include="shader\shadowDepth.fs">
@@ -155,6 +179,12 @@
       <Filter>源文件\shader</Filter>
     </None>
     <None Include="shader\structure.vs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\indirectLight.fs">
+      <Filter>源文件\shader</Filter>
+    </None>
+    <None Include="shader\indirectLight.vs">
       <Filter>源文件\shader</Filter>
     </None>
   </ItemGroup>

@@ -32,7 +32,7 @@ namespace PbrGi {
                                                 "shadowMapTexture",
                                                 "aoTexture"};
 
-        mProgram = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\pbr.vs", ".\\shader\\pbr.fs");
+        mProgram = std::make_shared<PbrGi::Program>(textureNames, ".\\shader\\indirectLight.vs", ".\\shader\\indirectLight.fs");
 
         mFrameBuffer = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT, false, true, 8);
         if (mFrameBuffer->init()) {
@@ -41,8 +41,15 @@ namespace PbrGi {
             std::cout << "colorPass framebuffer init failed" << std::endl;
         }
 
+
         mFrameBufferResolve = std::make_shared<PbrGi::frameBuffer>(SCR_WIDTH, SCR_HEIGHT);
-        if (mFrameBufferResolve->init()) {
+
+        mHdrTexture = std::make_shared<PbrGi::Texture>();
+        mHdrTexture->init2DTexture(SCR_WIDTH, SCR_HEIGHT, GL_RGBA16F, false);
+        std::vector<std::shared_ptr<PbrGi::Texture>> multiColorOutput;
+        multiColorOutput.push_back(mHdrTexture);
+
+        if (mFrameBufferResolve->init(multiColorOutput)) {
             std::cout << "colorPass resolve framebuffer init success" << std::endl;
         } else {
             std::cout << "colorPass resolve framebuffer init failed" << std::endl;
@@ -130,12 +137,9 @@ namespace PbrGi {
         
         mFrameBuffer->unload();
 
+        mFrameBuffer->blitToFrameBuffer(mFrameBufferResolve->getFrameBuffer(), 0, 1);
 
-        mFrameBuffer->blitToFrameBuffer(mFrameBufferResolve->getFrameBuffer());
-
-        mFrameBufferResolve->blitToFrameBuffer(0);
         glPopDebugGroup();
-
     }
 
     ColorPass::~ColorPass() {

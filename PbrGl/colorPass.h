@@ -20,6 +20,9 @@ namespace PbrGi {
                         std::shared_ptr<Texture> gaussianBlurDepthTexture = nullptr, 
                         std::shared_ptr<camera> lightCamera = nullptr);
             void render(std::vector<std::shared_ptr<model>> models, bool skybox);
+            std::shared_ptr<Texture> result() {
+                return mHdrTexture;
+            }
             ~ColorPass();
 
         private:
@@ -34,6 +37,7 @@ namespace PbrGi {
             std::shared_ptr<SkyBox> mSkybox;
             std::shared_ptr<camera> mLightCamera;
             std::shared_ptr<Texture> mBilateralBlurAoTexture;
+            std::shared_ptr<Texture> mHdrTexture;
     };
 }
 

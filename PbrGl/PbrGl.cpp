@@ -17,6 +17,8 @@
 #include "bilateralBlurPass.h"
 #include "gtaoPass.h"
 #include "structurePass.h"
+#include "toneMapPass.h"
+#include "SsrPass.h"
 
 float kReleaseMouseX = 0.0f, kReleaseMouseY = 0.0f;
 float kPushMouseX = 0.0f, kPushMouseY = 0.0f;
@@ -166,6 +168,10 @@ int main() {
 
     std::shared_ptr<PbrGi::ColorPass> kColorPass = std::make_shared<PbrGi::ColorPass>(kCamera, iblSkyBox, kBilateralBlurPass->result(), kGaussianBlurPass->result(), kLight);
 
+    std::shared_ptr<PbrGi::SSrPass> kSsrPass = std::make_shared<PbrGi::SSrPass>(kStructurePass->result(), kColorPass->result());
+
+    std::shared_ptr<PbrGi::ToneMapPass> kToneMapPass = std::make_shared<PbrGi::ToneMapPass>(kColorPass->result());
+
     float blurWidth = 20.0f;
 
     while (!glfwWindowShouldClose(window))
@@ -178,7 +184,9 @@ int main() {
         kGaussianBlurPass->render(blurWidth);
         kGtaoPass->render();
         kBilateralBlurPass->render();
+        kSsrPass->render();
         kColorPass->render(models, false);
+        kToneMapPass->render();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

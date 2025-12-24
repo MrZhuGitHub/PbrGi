@@ -159,16 +159,21 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="colorPass.cpp" />
     <ClCompile Include="framebuffer.cpp" />
+    <ClCompile Include="FxaaPass.cpp" />
     <ClCompile Include="gaussianBlurPass.cpp" />
     <ClCompile Include="gtaoPass.cpp" />
+    <ClCompile Include="hierarchicalDepthPass.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="PbrGl.cpp" />
     <ClCompile Include="program.cpp" />
     <ClCompile Include="shadowPass.cpp" />
     <ClCompile Include="skybox.cpp" />
+    <ClCompile Include="SsrPass.cpp" />
     <ClCompile Include="structurePass.cpp" />
+    <ClCompile Include="TaaPass.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="third-party\glad\src\glad.c" />
+    <ClCompile Include="toneMapPass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bilateralBlurPass.h" />
@@ -176,14 +181,19 @@
     <ClInclude Include="colorPass.h" />
     <ClInclude Include="common.hpp" />
     <ClInclude Include="framebuffer.h" />
+    <ClInclude Include="FxaaPass.h" />
     <ClInclude Include="gaussianBlurPass.h" />
     <ClInclude Include="gtaoPass.h" />
+    <ClInclude Include="hierarchicalDepthPass.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="program.h" />
     <ClInclude Include="shadowPass.h" />
     <ClInclude Include="skybox.h" />
+    <ClInclude Include="SsrPass.h" />
     <ClInclude Include="structurePass.h" />
+    <ClInclude Include="TaaPass.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="toneMapPass.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="asset\su7.glb" />
@@ -193,8 +203,8 @@
     <None Include="shader\gaussianBlur.vs" />
     <None Include="shader\gtao.fs" />
     <None Include="shader\gtao.vs" />
-    <None Include="shader\pbr.fs" />
-    <None Include="shader\pbr.vs" />
+    <None Include="shader\indirectLight.fs" />
+    <None Include="shader\indirectLight.vs" />
     <None Include="shader\shadowDepth.fs" />
     <None Include="shader\shadowDepth.vs" />
     <None Include="shader\Simple.fs" />

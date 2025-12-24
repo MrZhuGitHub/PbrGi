@@ -25,7 +25,7 @@ namespace PbrGi {
 
             glGenTextures(1, &textureId_);
             glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textureId_);
-            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples_, GL_RGBA, width_, height_, GL_TRUE);
+            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples_, GL_RGBA16F, width_, height_, GL_TRUE);
             glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, textureId_, 0);
@@ -170,15 +170,17 @@ namespace PbrGi {
         return initSuccess_;
     }
 
-    bool frameBuffer::blitToFrameBuffer(unsigned int frameBuffer) {
+    bool frameBuffer::blitToFrameBuffer(unsigned int frameBuffer, unsigned int readAttachment, unsigned int writeAttachment) {
         if (!initSuccess_) {
             return initSuccess_;
         }
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBufferId_);
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + readAttachment);
 
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer);
-
+        GLenum drawBufs[] = {GL_COLOR_ATTACHMENT0 + writeAttachment};
+        glDrawBuffers(1, drawBufs);        
 
         glBlitFramebuffer(0, 0, width_, height_, 0, 0, width_, height_, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 

@@ -102,20 +102,6 @@ float srgb_to_linear(float c) {
     }
 }
 
-float linear_to_srgb(float c) {
-    float a  = 0.055;
-    float a1 = 1.055;
-    float b  = 12.92;
-    float p  = 1.0 / 2.4;
-	if (c < 0.0031308) {
-		c = c * b;
-	} else {
-		c = a1 * pow(c, p) - a;
-	}
-
-    return c;
-}
-
 bool isTexCoordValid(vec2 texCoord) {
     return all(greaterThanEqual(texCoord, vec2(0.0))) && 
            all(lessThanEqual(texCoord, vec2(0.99)));
@@ -199,7 +185,7 @@ void main()
 			}
 		}
 		
-		Out0_color = vec4(unLightColor * (0.7 + visibility * 0.3), 1.0);
+		Out0_color = vec4(unLightColor * (0.3 + visibility * 0.7), 1.0);
 
 	} else {
 		float iblLuminance = 1.0;
@@ -295,18 +281,6 @@ void main()
 			hdrColor = hdrColor + texture(emissionTexture, TexCoord).rgb;
 		}
 
-		const float A = 2.51;
-		const float B = 0.03;
-		const float C = 2.43;
-		const float D = 0.59;
-		const float E = 0.14;	
-		vec3 LDR = (hdrColor * (A * hdrColor + B)) / (hdrColor * (C * hdrColor + D) + E);
-
-		LDR.r = linear_to_srgb(LDR.r);
-		LDR.g = linear_to_srgb(LDR.g);
-		LDR.b = linear_to_srgb(LDR.b);
-
-		Out0_color = vec4(LDR, opacityFactor);
+		Out0_color = vec4(hdrColor, opacityFactor);
 	}
-
 }

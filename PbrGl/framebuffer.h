@@ -27,7 +27,7 @@ namespace PbrGi {
 
         bool unload();
 
-        bool blitToFrameBuffer(unsigned int frameBuffer);
+        bool blitToFrameBuffer(unsigned int frameBuffer, unsigned int readAttachment, unsigned int writeAttachment);
 
         std::shared_ptr<Texture> getColorBuffer(unsigned int index = 0) const {
             if (0 == index) {
