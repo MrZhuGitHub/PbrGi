@@ -17,11 +17,16 @@ namespace PbrGi {
                 return mDepthTexture;
             }
 
+            std::shared_ptr<Texture> normal() {
+                return mNormalTexture;
+            }
+
         private:
             std::shared_ptr<Program> mRenderProgram;
             std::shared_ptr<frameBuffer> mFramebuffer;
             std::shared_ptr<camera> mCamera;
             std::shared_ptr<Texture> mDepthTexture;
+            std::shared_ptr<Texture> mNormalTexture;
     };
 }
 

@@ -21,7 +21,7 @@ namespace PbrGi {
 
         ~frameBuffer();
 
-        bool init(std::vector<std::shared_ptr<Texture>> mutipleColorTextures = {});
+        bool init(std::vector<std::shared_ptr<Texture>> mutipleColorTextures = {}, std::shared_ptr<Texture> depthTexture = nullptr);
 
         bool setup();
 
@@ -58,6 +58,8 @@ namespace PbrGi {
         bool readPixels(unsigned int x, unsigned int y, unsigned int width, unsigned int height, float* pixels);
 
         bool readDepth(unsigned int x, unsigned int y, unsigned int width, unsigned int height, float* depth);
+
+        bool setFramebufferMipmapLevel(unsigned int mipmapLevel);
 
     private:
         unsigned int textureId_;

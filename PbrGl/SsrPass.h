@@ -13,7 +13,7 @@ namespace PbrGi {
 
     class SSrPass {
         public:
-            SSrPass(std::shared_ptr<Texture> depthTexture, std::shared_ptr<Texture> colorTexture);
+            SSrPass(std::shared_ptr<Texture> depthTexture, std::shared_ptr<Texture> colorTexture, std::shared_ptr<Texture> normalTexture);
             ~SSrPass();
             void render();
             std::shared_ptr<Texture> result() {
@@ -27,6 +27,7 @@ namespace PbrGi {
             std::shared_ptr<Texture> mDepthTexture;
             std::shared_ptr<Texture> mColorTexture;
             std::shared_ptr<model> mTextureModel;
+            std::shared_ptr<Texture> mNormalTexture;
     };
 }
 

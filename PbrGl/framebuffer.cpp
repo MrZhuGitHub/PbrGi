@@ -17,7 +17,7 @@ namespace PbrGi {
 
     }
 
-    bool frameBuffer::init(std::vector<std::shared_ptr<Texture>> mutipleColorTextures) {
+    bool frameBuffer::init(std::vector<std::shared_ptr<Texture>> mutipleColorTextures, std::shared_ptr<Texture> depthTexture) {
         mMutipleColorTextures = mutipleColorTextures;
         if (mass_) {
             glGenFramebuffers(1, &frameBufferId_);
@@ -57,20 +57,24 @@ namespace PbrGi {
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width_, height_, 0, GL_RGBA, GL_FLOAT, NULL);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 glGenerateMipmap(GL_TEXTURE_2D);
                 glBindTexture(GL_TEXTURE_2D, 0);
 
-                glGenTextures(1, &depthbufferTextureId_);
-                glBindTexture(GL_TEXTURE_2D, depthbufferTextureId_);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width_, height_, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                glGenerateMipmap(GL_TEXTURE_2D);
-                glBindTexture(GL_TEXTURE_2D, 0);
+                if (depthTexture) {
+                    depthTexture->getTextureId(depthbufferTextureId_);
+                } else {
+                    glGenTextures(1, &depthbufferTextureId_);
+                    glBindTexture(GL_TEXTURE_2D, depthbufferTextureId_);
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width_, height_, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                    glGenerateMipmap(GL_TEXTURE_2D);
+                    glBindTexture(GL_TEXTURE_2D, 0);
+                }
 
                 glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId_);
 
@@ -217,5 +221,29 @@ namespace PbrGi {
         return true;
     }
 
+    bool frameBuffer::setFramebufferMipmapLevel(unsigned int mipmapLevel) {
+        glGetError();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId_);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthbufferTextureId_, mipmapLevel);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId_, mipmapLevel);
+
+        for (int i = 1; i <= mMutipleColorTextures.size(); i++) {
+            unsigned int textureId;
+            if (mMutipleColorTextures[i - 1]->getTextureId(textureId)) {
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, textureId, mipmapLevel);
+            }
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        if (GL_NO_ERROR == glGetError()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 }

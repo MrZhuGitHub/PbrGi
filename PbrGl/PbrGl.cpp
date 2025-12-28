@@ -19,6 +19,7 @@
 #include "structurePass.h"
 #include "toneMapPass.h"
 #include "SsrPass.h"
+#include "hierarchicalDepthPass.h"
 
 float kReleaseMouseX = 0.0f, kReleaseMouseY = 0.0f;
 float kPushMouseX = 0.0f, kPushMouseY = 0.0f;
@@ -168,7 +169,9 @@ int main() {
 
     std::shared_ptr<PbrGi::ColorPass> kColorPass = std::make_shared<PbrGi::ColorPass>(kCamera, iblSkyBox, kBilateralBlurPass->result(), kGaussianBlurPass->result(), kLight);
 
-    std::shared_ptr<PbrGi::SSrPass> kSsrPass = std::make_shared<PbrGi::SSrPass>(kStructurePass->result(), kColorPass->result());
+    std::shared_ptr<PbrGi::HierarchicalDepthPass> kHierarchicalDepthPass = std::make_shared<PbrGi::HierarchicalDepthPass>(kStructurePass->result());
+
+    std::shared_ptr<PbrGi::SSrPass> kSsrPass = std::make_shared<PbrGi::SSrPass>(kHierarchicalDepthPass->result(), kColorPass->result(), kStructurePass->normal());
 
     std::shared_ptr<PbrGi::ToneMapPass> kToneMapPass = std::make_shared<PbrGi::ToneMapPass>(kColorPass->result());
 
@@ -184,6 +187,7 @@ int main() {
         kGaussianBlurPass->render(blurWidth);
         kGtaoPass->render();
         kBilateralBlurPass->render();
+        kHierarchicalDepthPass->render();
         kSsrPass->render();
         kColorPass->render(models, false);
         kToneMapPass->render();

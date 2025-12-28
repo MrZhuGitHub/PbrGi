@@ -7,6 +7,8 @@ uniform float far;
 
 in highp float depth;
 
+in vec4 normal;
+
 highp float LinearizeDepth(float depth)
 {
     float ndc = depth * 2.0 - 1.0;
@@ -19,5 +21,5 @@ void main()
 
     //Out1_color.x = depth;
     //Out1_color.y = remapDepth;
-    Out0_color = vec4(1.0, 1.0, 1.0, 1.0);
+    Out0_color = normal;
 }

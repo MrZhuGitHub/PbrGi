@@ -17,6 +17,8 @@ namespace PbrGi {
         }
         mDepthTexture = mFramebuffer->getDepthBuffer();
 
+        mNormalTexture = mFramebuffer->getColorBuffer(0);
+
     }
 
     StructurePass::~StructurePass() {
