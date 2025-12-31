@@ -171,7 +171,7 @@ int main() {
 
     std::shared_ptr<PbrGi::HierarchicalDepthPass> kHierarchicalDepthPass = std::make_shared<PbrGi::HierarchicalDepthPass>(kStructurePass->result());
 
-    std::shared_ptr<PbrGi::SSrPass> kSsrPass = std::make_shared<PbrGi::SSrPass>(kHierarchicalDepthPass->result(), kColorPass->result(), kStructurePass->normal());
+    std::shared_ptr<PbrGi::SSrPass> kSsrPass = std::make_shared<PbrGi::SSrPass>(kCamera, kHierarchicalDepthPass->result(), kColorPass->result(), kStructurePass->normal());
 
     std::shared_ptr<PbrGi::ToneMapPass> kToneMapPass = std::make_shared<PbrGi::ToneMapPass>(kColorPass->result());
 

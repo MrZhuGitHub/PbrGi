@@ -14,6 +14,5 @@ void main()
 {
 	depth = (viewMatrix * objPosMatrix[gl_InstanceID] * vec4(vPosition, 1.0)).z;
 	gl_Position = projectionMatrix * viewMatrix * objPosMatrix[gl_InstanceID] * vec4(vPosition, 1.0);
-	normal = vec4(mat3(transpose(inverse(objPosMatrix[gl_InstanceID]))) * vNormal, 1.0);
-
+	normal = vec4(normalize(mat3(transpose(inverse(viewMatrix * objPosMatrix[gl_InstanceID]))) * vNormal), 1.0);
 }
